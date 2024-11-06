@@ -1,16 +1,13 @@
-const express = require('express');
-const config = require('./config');
+import express from 'express';
+import config from './config.js';
 
-const app = express();
-
-const users = require('./modules/users/routes');
 
 // port config
+const app = express();
 app.set('port', config.app.port);
 
 // routes
-app.use('/api/users', users);
+// app.use('/api/users', users);
 
 
-
-module.exports = app;
+export default app;

@@ -1,6 +1,8 @@
-const app = require('./app');
-const connection = require('./DB/connection');
-const config = require('./config');
+import connectToPostgres from "./DB/connection.js"
+import config from "./config.js";
+import app from "./app.js";
+import createTables from "./models/index.js";
+
 
 // Server is listening
 app.listen(app.get('port'), () => {
@@ -8,5 +10,9 @@ app.listen(app.get('port'), () => {
 });
 
 // Connection with DB
-config.postgres.client = connection.connect;
+config.postgres.client = await connectToPostgres();
+
+// Tables creation
+createTables(config.postgres.client);
+
 

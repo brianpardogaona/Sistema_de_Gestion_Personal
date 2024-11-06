@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "nodemon src/index.js"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "description": "",

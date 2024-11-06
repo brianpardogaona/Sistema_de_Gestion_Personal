@@ -1,4 +1,4 @@
-const db = require('../../DB/mysql');
+import db from '../../DB/mysql';
 
 const TABLE = 'users';
 
