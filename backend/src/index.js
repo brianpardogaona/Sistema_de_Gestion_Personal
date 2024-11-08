@@ -1,6 +1,6 @@
-import connectToPostgres from "./DB/connection.js"
 import config from "./config.js";
 import app from "./app.js";
+import connectToPostgres from "./DB/connection.js"
 import createTables from "./models/index.js";
 
 

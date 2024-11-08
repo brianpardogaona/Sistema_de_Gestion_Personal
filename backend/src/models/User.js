@@ -5,10 +5,10 @@ export default (sequelize) => {
     "User",
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true,
       },
       username: {
         type: DataTypes.STRING,
@@ -33,5 +33,5 @@ export default (sequelize) => {
     }
   );
 
-  console.log("All models were synchronized successfully.");
+  return User;
 };
