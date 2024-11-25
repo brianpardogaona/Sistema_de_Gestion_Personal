@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import config from "../config.js";
+import { where } from "sequelize";
 
 export class UserService {
   constructor(body) {
@@ -42,6 +43,24 @@ export class UserService {
       return true;
     } catch (error) {
       return error;
+    }
+  }
+
+  async deleteUser() {
+    const user = User(this.sequelize);
+    const id = this.body.id;
+    const drop = await user.destroy({
+      where: {
+        id: id,
+      },
+    });
+
+    if (drop == 1) {
+      return "El usuario ha sido eliminado correctamente";
+    } else if (drop == 0) {
+      return new Error("El usuario no existe");
+    } else {
+      return new Error("Algo ha ido mal");
     }
   }
 }
