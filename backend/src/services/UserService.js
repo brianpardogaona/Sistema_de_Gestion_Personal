@@ -6,10 +6,32 @@ export class UserService {
     this.sequelize = config.postgres.client;
     this.body = body;
   }
-  
 
-  get() {
-    return this.body;
+  async getAllUsers() {
+    const user = User(this.sequelize);
+    const allUsers = await user.findAll();
+    let allUsersData = [];
+    allUsers.map((u) => {
+      allUsersData.push(u.dataValues);
+    });
+    return allUsersData;
+  }
+
+  async getUser() {
+    const userId = this.body.id;
+    const user = User(this.sequelize);
+
+    try {
+      const foundUser = await user.findAll({
+        where: {
+          id: userId,
+        },
+      });
+
+      return foundUser[0].dataValues;
+    } catch (error) {
+      return error;
+    }
   }
 
   async createUser() {
@@ -22,25 +44,4 @@ export class UserService {
       return error;
     }
   }
-
-  async getUser(){
-    const userId = this.body.id;
-    const user = User(this.sequelize);
-
-    try {
-      const foundUser = await user.findAll({
-        where: {
-          id: userId
-        }
-      });
-  
-      return foundUser[0].dataValues;
-    } catch (error) {
-        return error;
-    }
-
-    
-  }
-
-  
 }
