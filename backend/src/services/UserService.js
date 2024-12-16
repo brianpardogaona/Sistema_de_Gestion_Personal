@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import config from "../config.js";
-import { where } from "sequelize";
+import bcrypt from "bcrypt";
+import { Validation } from "./Validation.js";
 
 export class UserService {
   constructor(body) {
@@ -37,10 +38,23 @@ export class UserService {
 
   async createUser() {
     const user = User(this.sequelize);
+    try {
+      Validation.username(this.body.username);
+      Validation.name(this.body.name);
+      Validation.name(this.body.lastName);
+      Validation.password(this.body.password);
+    } catch (error) {
+      return error;
+    }
+
+    this.body.password = await bcrypt.hash(
+      this.body.password,
+      Number(process.env.SALTS_ROUNDS)
+    );
 
     try {
       await user.create(this.body);
-      return true;
+      return "Usuario creado correctamente.";
     } catch (error) {
       return error;
     }
@@ -63,4 +77,6 @@ export class UserService {
       return new Error("Algo ha ido mal");
     }
   }
+
+  async modifyUser() {}
 }

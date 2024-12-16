@@ -28,25 +28,27 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Create a new user
-router.post("/create", async (req, res) => {
+// Login
+router.post("/login", (req, res) => {});
+
+// Register a new user
+router.post("/register", async (req, res) => {
   const userService = new UserService(req.body);
   const success = await userService.createUser();
 
-  if (success == true) {
-    res.status(200).json({ message: "Usuario creado correctamente." });
+  if (!(success instanceof Error)) {
+    res.status(200).json({ message: success });
   } else {
-    if (success.name == "SequelizeUniqueConstraintError") {
-      res
-        .status(400)
-        .json({ error: "Ya existe un usario con ese nombre de usuario." });
-    } else {
-      res.status(400).json({ error: "Algo ha ido mal." });
-    }
+    const errorResponse = {
+      error: success.message,
+      code: success.name || "UNKNOWN_ERROR",
+    };
+    res.status(400).json(errorResponse);
   }
+
 });
 
-// Delete an user by id
+// Delete user by id
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
   const body = { id: id };
@@ -54,12 +56,17 @@ router.delete("/:id", async (req, res) => {
 
   const result = await user.deleteUser();
   if (!(result instanceof Error)) {
-      res.send({message: result});
+    res.send({ message: result });
   } else {
-    res.status(400).json({error: result.message});
+    res.status(400).json({ error: result.message });
   }
 });
 
-
+// Modify user
+router.patch("/:id", async (req, res) => {
+  const id = req.params.id;
+  const user = new UserService(req.body);
+  user.modifyUser();
+});
 
 export default router;
