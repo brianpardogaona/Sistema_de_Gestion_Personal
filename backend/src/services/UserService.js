@@ -36,8 +36,21 @@ export class UserService {
     }
   }
 
-  async createUser() {
+  async login() {
     const user = User(this.sequelize);
+    const { username, password } = this.body;
+
+    const userExists = await user.findOne({where: { username: username }});
+    if (!userExists) throw new Error("El nombre de usuario no existe");
+    const isValid = await bcrypt.compare(
+      password,
+      userExists.dataValues.password
+    );
+    if(!isValid) throw new Error("La contraseña es incorrecta")
+
+  }
+
+  async createUser() {
     try {
       Validation.username(this.body.username);
       Validation.name(this.body.name);
@@ -51,6 +64,8 @@ export class UserService {
       this.body.password,
       Number(process.env.SALTS_ROUNDS)
     );
+
+    const user = User(this.sequelize);
 
     try {
       await user.create(this.body);
