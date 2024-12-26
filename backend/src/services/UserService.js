@@ -46,8 +46,9 @@ export class UserService {
       password,
       userExists.dataValues.password
     );
-    if(!isValid) throw new Error("La contraseña es incorrecta")
-
+    if(!isValid) throw new Error("La contraseña es incorrecta");
+    
+    return userExists;
   }
 
   async createUser() {

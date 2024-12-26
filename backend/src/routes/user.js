@@ -1,4 +1,5 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 
 // services
 import { UserService } from "../services/UserService.js";
@@ -32,13 +33,27 @@ router.get("/:id", async (req, res) => {
 router.post("/login", async (req, res) => {
   const user = new UserService(req.body);
 
-  try{
-    await user.login();
-    res.send("TODO OK")
-  }catch(error){
-    res.status(400).json({error: error.message})
+  try {
+    const foundedUser = await user.login();
+    const token = jwt.sign(
+      {
+        id: foundedUser.dataValues.id,
+        username: foundedUser.dataValues.username,
+      },
+      process.env.SECRET_JWT_KEY,
+      {
+        expiresIn: "1h",
+      }
+    );
+    res
+      .cookie('acces-token', token, {
+        httpOnly: true,
+        sameSite: 'lax'
+      })
+      .send({foundedUser, token});
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
-
 });
 
 // Register a new user
@@ -55,7 +70,6 @@ router.post("/register", async (req, res) => {
     };
     res.status(400).json(errorResponse);
   }
-
 });
 
 // Delete user by id
