@@ -1,0 +1,28 @@
+.navbar-container {
+  position: fixed;         
+  top: 0;                 
+  left: 0;                
+  width: 100%;          
+  z-index: 1000;          
+  background-color: var(--primary-color, #ffffff);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.p-menubar {
+  width: 100%;           
+  justify-content: center;
+  background-color: #8cb1c4;
+}
+
+.selected-item {
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+.p-menuitem{
+  margin-left: 5px;
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+

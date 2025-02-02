@@ -8,10 +8,15 @@ import "../styles/styles.css";
 
 // functions
 import login from "@/pagesFunctions/login";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const [passwordIsCorrect, setPasswordIsCorrect] = useState(true);
+
+
   // Each time Login is loaded, "dark" theme is applied
   useEffect(() => {
     document.body.classList.add("dark");
@@ -21,7 +26,23 @@ function Login() {
     };
   }, []);
 
+  // handle fetch Login
+  const handleLogin = async () => {
 
+    const response = await login(username, password);
+    
+    try{
+      if(response.status === 200){
+        navigate("/inicio");
+      }else{
+        setPasswordIsCorrect(false);
+      }
+    }catch(e){
+      console.log(e);
+    }
+   
+    
+  };
 
   return (
     <>
@@ -36,20 +57,45 @@ function Login() {
           </div>
           <div id="panel">
             <h2>Introduce tu nombre de usuario</h2>
-            <Input value={username} type="text" placeholder="Nombre de usuario" onChange={(e) => {setUsername(e.target.value)}}/>
-            {username != "" && (
+            <Input
+              value={username}
+              type="text"
+              placeholder="Nombre de usuario"
+              onChange={(e) => {
+                setUsername(e.target.value);
+              }}
+            />
+            {(!passwordIsCorrect || username != "") && (
               <>
                 <h2 id="passText">Introduce tu contraseña</h2>
-                <Input  value={password} type="password" placeholder="Contraseña" onChange={(e) => {setPassword(e.target.value)}}/>
-                
+                <Input
+                  value={password}
+                  type="password"
+                  placeholder="Contraseña"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                />
               </>
             )}
             {
-              username != "" && password !="" &&
-              <>
-                <Button id="login-button" onClick={async ()=>{await login(username, password)}}>Iniciar sesión</Button>
-              </>
+              !passwordIsCorrect &&
+              (
+                <>
+                  <p>La contraseña es incorrecta</p>
+                </>
+              )
             }
+            {(!passwordIsCorrect || (username != "" && password != "")) && (
+              <>
+                <Button
+                  id="login-button"
+                  onClick={handleLogin}
+                >
+                  Iniciar sesión
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
