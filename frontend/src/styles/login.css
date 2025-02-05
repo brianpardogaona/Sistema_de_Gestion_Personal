@@ -62,17 +62,34 @@
 }
 
 #passText{
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 #login-button {
-  margin-top: 25px;
+  margin-top: 10px;
 }
-
-
-
 
 #panel Input, #left-side Button, #right-side Button{
   max-width: 220px;
 }
 
+
+.show{
+  opacity: 1;
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+
+.stash{
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.bold{
+  font-weight: bold;
+}
+
+.warning{
+  color: rgb(209, 108, 108);
+}

@@ -16,7 +16,6 @@ function Login() {
   const navigate = useNavigate();
   const [passwordIsCorrect, setPasswordIsCorrect] = useState(true);
 
-
   // Each time Login is loaded, "dark" theme is applied
   useEffect(() => {
     document.body.classList.add("dark");
@@ -28,20 +27,17 @@ function Login() {
 
   // handle fetch Login
   const handleLogin = async () => {
-
     const response = await login(username, password);
-    
-    try{
-      if(response.status === 200){
+
+    try {
+      if (response.status === 200) {
         navigate("/inicio");
-      }else{
+      } else {
         setPasswordIsCorrect(false);
       }
-    }catch(e){
+    } catch (e) {
       console.log(e);
     }
-   
-    
   };
 
   return (
@@ -53,10 +49,10 @@ function Login() {
         </div>
         <div id="right-side">
           <div id="title">
-            <h1>BIENVENDIDO/A A TU GESTOR DE PROGRESO PERSONAL</h1>
+            <h1 className="bold">BIENVENDIDO/A A TU GESTOR DE PROGRESO PERSONAL</h1>
           </div>
           <div id="panel">
-            <h2>Introduce tu nombre de usuario</h2>
+            <h2>Nombre de usuario</h2>
             <Input
               value={username}
               type="text"
@@ -65,37 +61,42 @@ function Login() {
                 setUsername(e.target.value);
               }}
             />
-            {(!passwordIsCorrect || username != "") && (
-              <>
-                <h2 id="passText">Introduce tu contraseña</h2>
-                <Input
-                  value={password}
-                  type="password"
-                  placeholder="Contraseña"
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
-              </>
-            )}
-            {
-              !passwordIsCorrect &&
-              (
-                <>
-                  <p>La contraseña es incorrecta</p>
-                </>
-              )
-            }
-            {(!passwordIsCorrect || (username != "" && password != "")) && (
-              <>
-                <Button
-                  id="login-button"
-                  onClick={handleLogin}
-                >
-                  Iniciar sesión
-                </Button>
-              </>
-            )}
+
+            <h2
+              id="passText"
+              className={
+                !passwordIsCorrect || username != "" ? "show" : "stash"
+              }
+            >
+              Contraseña
+            </h2>
+            <Input
+              className={
+                !passwordIsCorrect || username != "" ? "show" : "stash"
+              }
+              value={password}
+              type="password"
+              placeholder="Contraseña"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+
+            <p className={!passwordIsCorrect ? "show bold warning" : "stash"}>
+              La contraseña es incorrecta
+            </p>
+
+            <Button
+              id="login-button"
+              onClick={handleLogin}
+              className={
+                !passwordIsCorrect || (username != "" && password != "")
+                  ? "show"
+                  : "stash"
+              }
+            >
+              Iniciar sesión
+            </Button>
           </div>
         </div>
       </div>
