@@ -1,0 +1,36 @@
+.chart-space{
+
+  height: 50vh;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.chart-tabs button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.chart-tabs button:hover {
+  background-color: #ddd;
+}
+
+.chart-tabs .active {
+  background-color: #007bff;
+  color: white;
+}
