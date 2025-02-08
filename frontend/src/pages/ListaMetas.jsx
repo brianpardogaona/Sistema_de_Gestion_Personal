@@ -29,6 +29,7 @@ const metasData = [
   },
 ];
 
+// 🔹 Función para formatear la fecha
 const formatearFecha = (fechaStr) => {
   const meses = [
     "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -56,6 +57,34 @@ function ListaMetas() {
   };
 
   const handleBusquedaChange = (e) => setBusqueda(e.target.value.toLowerCase());
+
+  const handleMetaCheckbox = (metaId) => {
+    setMetas((prevMetas) =>
+      prevMetas.map((meta) =>
+        meta.id === metaId
+          ? {
+              ...meta,
+              objetivos: meta.objetivos.map((obj) => ({ ...obj, completado: !meta.objetivos.every((o) => o.completado) })),
+            }
+          : meta
+      )
+    );
+  };
+
+  const handleObjetivoCheckbox = (metaId, objId) => {
+    setMetas((prevMetas) =>
+      prevMetas.map((meta) =>
+        meta.id === metaId
+          ? {
+              ...meta,
+              objetivos: meta.objetivos.map((obj) =>
+                obj.id === objId ? { ...obj, completado: !obj.completado } : obj
+              ),
+            }
+          : meta
+      )
+    );
+  };
 
   const metasFiltradas = metas
     .filter((meta) => meta.nombre.toLowerCase().includes(busqueda))
@@ -95,7 +124,7 @@ function ListaMetas() {
         return (
           <div key={meta.id} className="meta">
             <div className="meta-header">
-              <input type="checkbox" checked={todosCompletos} readOnly />
+              <input type="checkbox" checked={todosCompletos} onChange={() => handleMetaCheckbox(meta.id)} />
               <span className="meta-nombre">
                 {meta.nombre} <span className="fecha">({formatearFecha(meta.fecha)})</span>
               </span>
@@ -110,7 +139,7 @@ function ListaMetas() {
               <ul className="objetivos">
                 {meta.objetivos.map((obj) => (
                   <li key={obj.id}>
-                    <input type="checkbox" checked={obj.completado} readOnly />
+                    <input type="checkbox" checked={obj.completado} onChange={() => handleObjetivoCheckbox(meta.id, obj.id)} />
                     {obj.nombre} <span className="fecha">({formatearFecha(obj.fecha)})</span>
                   </li>
                 ))}
