@@ -111,6 +111,12 @@ function Grafica() {
     };
   }, [selectedCharts]);
 
+  useEffect(() => {
+  if (activeTab === "select" && selectedCharts.length > 0) {
+    setSelectedCharts([...selectedCharts]);
+  }
+}, [activeTab]);
+
   const toggleChart = (chart) => {
     setSelectedCharts((prev) => {
       if (prev.includes(chart)) {
@@ -141,7 +147,7 @@ function Grafica() {
                   onChange={() => toggleChart(chart)}
                   disabled={!selectedCharts.includes(chart) && selectedCharts.length >= 4}
                 />
-                {chart}
+                {"  " + chart}
               </label>
             ))}
           </div>

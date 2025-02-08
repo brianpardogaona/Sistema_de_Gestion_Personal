@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Inicio from "./pages/Inicio";
 import MisMetas from "./pages/MisMetas";
-import MiCuenta from "./pages/MiCuenta"
+import MiCuenta from "./pages/MiCuenta";
 
 function App() {
   return (
