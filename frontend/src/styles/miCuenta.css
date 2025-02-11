@@ -1,0 +1,111 @@
+.account-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+  background-color: white;
+}
+
+.title {
+  font-size: 36px;
+  color: #0a2c43;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.account-box {
+  background-color: #92bfd6; 
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 350px;
+}
+
+.user-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  background-color: #5a9ec9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white; 
+}
+
+.inputs-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputs-container label {
+  color: #0a2c43;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.inputs-container input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #5a9ec9;
+  background-color: #f8f9fa; 
+  color: #000000; 
+  font-weight: bold;
+}
+
+.inputs-container input:disabled {
+  background-color: #ffffff; 
+  color: #5a5a5a;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.buttons-container button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.edit-button {
+  background-color: #0a2c43; 
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #082031;
+  transform: scale(1.05);
+}
+
+.delete-button {
+  background-color: rgb(209, 108, 108);
+  color: white;
+  display: none; 
+}
+
+.delete-button:hover {
+  background-color: rgb(180, 80, 80);
+  transform: scale(1.05);
+}
+
+
+.editar-activo .delete-button {
+  display: block;
+}
