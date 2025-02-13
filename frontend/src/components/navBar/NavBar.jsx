@@ -33,28 +33,21 @@ function NavBar() {
       command: () => navigate("/mi-cuenta"),
       className: location.pathname === "/mi-cuenta" ? "selected-item" : "",
     },
-    {
-      label: "Salir",
-      icon: "pi pi-sign-out",
-      command: () => cerrarSesion(),
-    },
   ];
-
-
-  
 
   const cerrarSesion = () => {
     navigate('/');
   };
 
   return (
-    <>
-      <div className="navbar-container">
-        <Menubar 
-        model={items}
-        />
+    <div className="navbar-container">
+      <div className="navbar-content">
+        <Menubar model={items} />
+        <button className="logout-button" onClick={cerrarSesion}>
+          <i className="pi pi-sign-out" style={{ marginRight: "5px" }}></i> Salir
+        </button>
       </div>
-    </>
+    </div>
   );
 }
 
