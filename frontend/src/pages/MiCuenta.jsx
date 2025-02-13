@@ -21,7 +21,7 @@ function MiCuenta() {
       <div className="account-container">
         <h1 className="title">MI CUENTA</h1>
         <div className={`account-box ${editMode ? "editar-activo" : ""}`}>
-          <img src="/default-user.png" alt="Usuario" className="user-image" />
+          <img src="../../public/images/perfil.png" alt="Usuario" className="user-image" />
           <div className="inputs-container">
             <label>Nombre</label>
             <Input type="text" defaultValue="Brian" disabled={!editMode} />
