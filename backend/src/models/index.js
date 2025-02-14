@@ -1,11 +1,20 @@
 import { DataTypes } from "sequelize";
-import User from "./User.js";
 import { v4 as uuidv4 } from "uuid";
+
+import User from "./User.js";
+import Goal from "./Goal.js";
+import Objective from "./Objective.js";
 
 export default async function createTables(sequelize) {
   const user = User(sequelize);
   User(sequelize);
-  // sequelize.sync(); // {alter: true}
+
+  const goal = Goal(sequelize);
+  Goal(sequelize);
+
+  const objective = Objective(sequelize);
+  Objective(sequelize);
+  //sequelize.sync(); // {alter: true}
   console.log("All models were synchronized successfully.");
   
   // Crear un nuevo usuario

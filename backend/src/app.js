@@ -1,6 +1,8 @@
 import express from 'express';
 import config from './config.js';
 import user from './routes/user.js';
+import goal from './routes/goal.js';
+import objective from './routes/objective.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
@@ -23,5 +25,7 @@ app.use(cors({
 app.use(cookieParser());
 // routes
 app.use('/api/user', user);
+app.use('/api/goal', goal);
+app.use('/api/objective', objective);
 
 export default app;
