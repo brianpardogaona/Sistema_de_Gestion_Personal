@@ -31,15 +31,21 @@ export default (sequelize) => {
         allowNull: false,
         defaultValue: "pending",
       },
-      objectives: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
-        allowNull: true,
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW, 
+      },
+      completedAt: {
+        type: DataTypes.DATE,
+        allowNull: true, 
       },
     },
     {
       timestamps: false,
     }
   );
+
 
   return Goal;
 };

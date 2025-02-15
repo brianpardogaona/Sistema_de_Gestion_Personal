@@ -1,34 +1,25 @@
-import { DataTypes } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 
-import User from "./User.js";
-import Goal from "./Goal.js";
-import Objective from "./Objective.js";
+import UserModel from "./User.js";
+import GoalModel from "./Goal.js";
+import ObjectiveModel from "./Objective.js";
 
 export default async function createTables(sequelize) {
-  const user = User(sequelize);
-  User(sequelize);
+  try {
+    // Initialize models without relations
+    const User = UserModel(sequelize);
+    const Goal = GoalModel(sequelize);
+    const Objective = ObjectiveModel(sequelize);
 
-  const goal = Goal(sequelize);
-  Goal(sequelize);
+    // Relations
+    Goal.hasMany(Objective, { foreignKey: "goalId", as: "objectives" });
+    Objective.belongsTo(Goal, { foreignKey: "goalId", as: "goal" });
 
-  const objective = Objective(sequelize);
-  Objective(sequelize);
-  //sequelize.sync(); // {alter: true}
-  console.log("All models were synchronized successfully.");
-  
-  // Crear un nuevo usuario
-  //  const jane = await user.create( {username: 'jane2', name: 'Jane', lastName: 'Doe', password: 123});
+    // DB Sync
+    // await sequelize.sync({ alter: true });
+    console.log("✅ Todas las tablas fueron sincronizadas correctamente.");
 
-  // Buscar por id
-  /*const uuid_ex = uuidv4();
-  const existing_uuid = "06167e68-4164-4828-9488-95e5294eb935"
-
-  const existing_user =  await user.findAll({
-    where: {
-      id: existing_uuid,
-    },
-  });
-
-  console.log(existing_user[0].dataValues)*/
+  } catch (error) {
+    console.error("❌ Error al sincronizar la base de datos:", error);
+  }
 }
