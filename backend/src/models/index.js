@@ -17,9 +17,9 @@ export default async function createTables(sequelize) {
 
     // DB Sync
     // await sequelize.sync({ alter: true });
-    console.log("✅ Todas las tablas fueron sincronizadas correctamente.");
+    console.log("✅ All tables were succesfully synchronized.");
 
   } catch (error) {
-    console.error("❌ Error al sincronizar la base de datos:", error);
+    console.error("❌ Error synchronizing the database: ", error);
   }
 }
