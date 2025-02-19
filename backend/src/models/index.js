@@ -15,8 +15,15 @@ export default async function createTables(sequelize) {
     Goal.hasMany(Objective, { foreignKey: "goalId", as: "objectives" });
     Objective.belongsTo(Goal, { foreignKey: "goalId", as: "goal" });
 
+    User.hasMany(Goal, { foreignKey: "userId", as: "goals" });
+    Goal.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+    User.hasMany(Objective, { foreignKey: "userId", as: "objectives" });
+    Objective.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+
     // DB Sync
-    // await sequelize.sync({ alter: true });
+    // await sequelize.sync({ force: true });
     console.log("✅ All tables were succesfully synchronized.");
 
   } catch (error) {

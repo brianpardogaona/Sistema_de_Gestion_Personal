@@ -13,10 +13,12 @@ export default (sequelize) => {
       userId: {
         type: DataTypes.UUID,
         allowNull: false,
+        field: "userId",
         references: {
-          model: "Users",
+          model: "User",
           key: "id",
         },
+        onDelete: "CASCADE",
       },
       title: {
         type: DataTypes.STRING,
@@ -42,6 +44,7 @@ export default (sequelize) => {
       },
     },
     {
+      tableName: "Goal",
       timestamps: false,
     }
   );
