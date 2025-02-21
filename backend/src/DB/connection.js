@@ -10,11 +10,8 @@ async function connectToPostgres() {
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
+
   return sequelize;
 }
-
-// const connect = connectToPostgres();
-// module.exports = connect;
-// module.exports = connectToPostgres;
 
 export default connectToPostgres;

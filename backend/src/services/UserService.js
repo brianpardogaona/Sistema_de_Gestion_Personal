@@ -1,54 +1,49 @@
-import User from "../models/User.js";
-import config from "../config.js";
+import { getModels } from "../index.js";
 import bcrypt from "bcrypt";
 import { Validation } from "./Validation.js";
 
 export class UserService {
   constructor(body) {
-    this.sequelize = config.postgres.client;
     this.body = body;
   }
 
   async getAllUsers() {
-    const user = User(this.sequelize);
-    const allUsers = await user.findAll();
-    let allUsersData = [];
-    allUsers.map((u) => {
-      allUsersData.push(u.dataValues);
-    });
-    return allUsersData;
+    const { User } = getModels();
+    try {
+      const allUsers = await User.findAll();
+      return allUsers.map((u) => u.dataValues);
+    } catch (error) {
+      return error;
+    }
   }
 
   async getUser() {
+    const { User } = getModels();
     const userId = this.body.id;
-    const user = User(this.sequelize);
 
     try {
-      const foundUser = await user.findAll({
-        where: {
-          id: userId,
-        },
-      });
-
-      return foundUser[0].dataValues;
+      const foundUser = await User.findOne({ where: { id: userId } });
+      return foundUser ? foundUser.dataValues : new Error("Usuario no encontrado.");
     } catch (error) {
       return error;
     }
   }
 
   async login() {
-    const user = User(this.sequelize);
+    const { User } = getModels();
     const { username, password } = this.body;
 
-    const userExists = await user.findOne({where: { username: username }});
-    if (!userExists) throw new Error("El nombre de usuario no existe");
-    const isValid = await bcrypt.compare(
-      password,
-      userExists.dataValues.password
-    );
-    if(!isValid) throw new Error("La contraseña es incorrecta");
-    
-    return userExists;
+    try {
+      const userExists = await User.findOne({ where: { username } });
+      if (!userExists) throw new Error("El nombre de usuario no existe");
+
+      const isValid = await bcrypt.compare(password, userExists.dataValues.password);
+      if (!isValid) throw new Error("La contraseña es incorrecta");
+
+      return userExists;
+    } catch (error) {
+      return error;
+    }
   }
 
   async createUser() {
@@ -57,19 +52,11 @@ export class UserService {
       Validation.name(this.body.name);
       Validation.name(this.body.lastName);
       Validation.password(this.body.password);
-    } catch (error) {
-      return error;
-    }
 
-    this.body.password = await bcrypt.hash(
-      this.body.password,
-      Number(process.env.SALTS_ROUNDS)
-    );
+      this.body.password = await bcrypt.hash(this.body.password, Number(process.env.SALTS_ROUNDS));
 
-    const user = User(this.sequelize);
-
-    try {
-      await user.create(this.body);
+      const { User } = getModels();
+      await User.create(this.body);
       return "Usuario creado correctamente.";
     } catch (error) {
       return error;
@@ -77,22 +64,38 @@ export class UserService {
   }
 
   async deleteUser() {
-    const user = User(this.sequelize);
+    const { User } = getModels();
     const id = this.body.id;
-    const drop = await user.destroy({
-      where: {
-        id: id,
-      },
-    });
 
-    if (drop == 1) {
-      return "El usuario ha sido eliminado correctamente";
-    } else if (drop == 0) {
-      return new Error("El usuario no existe");
-    } else {
-      return new Error("Algo ha ido mal");
+    try {
+      const drop = await User.destroy({ where: { id } });
+      return drop === 1 ? "El usuario ha sido eliminado correctamente" : new Error("El usuario no existe");
+    } catch (error) {
+      return error;
     }
   }
 
-  async modifyUser() {}
+  async modifyUser() {
+    const { User } = getModels();
+    const { id, ...updates } = this.body;
+  
+    try {
+      if (Object.keys(updates).length === 0) {
+        throw new Error("No se proporcionaron datos para actualizar.");
+      }
+  
+      if (updates.password) {
+        updates.password = await bcrypt.hash(updates.password, Number(process.env.SALTS_ROUNDS));
+      }
+  
+      const updated = await User.update(updates, { where: { id } });
+  
+      return updated[0] === 1
+        ? "Usuario actualizado correctamente."
+        : new Error("No se encontró el usuario o no se realizaron cambios.");
+    } catch (error) {
+      return error;
+    }
+  }
+  
 }

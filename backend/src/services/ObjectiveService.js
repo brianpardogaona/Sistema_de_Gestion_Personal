@@ -1,25 +1,23 @@
-import Objective from "../models/Objective.js";
-import config from "../config.js";
+import { getModels } from "../index.js";
 
 export class ObjectiveService {
   constructor(body = {}) {
-    this.sequelize = config.postgres.client;
     this.body = body;
   }
 
   async getObjectivesByGoalId(goalId) {
-    const objectiveModel = Objective(this.sequelize);
+    const { Objective } = getModels(); 
     try {
-      return await objectiveModel.findAll({ where: { goalId } });
+      return await Objective.findAll({ where: { goalId } });
     } catch (error) {
       return error;
     }
   }
 
   async createObjective() {
-    const objectiveModel = Objective(this.sequelize);
+    const { Objective } = getModels();
     try {
-      const newObjective = await objectiveModel.create(this.body);
+      const newObjective = await Objective.create(this.body);
       return newObjective;
     } catch (error) {
       return error;
@@ -27,9 +25,9 @@ export class ObjectiveService {
   }
 
   async updateObjective(id) {
-    const objectiveModel = Objective(this.sequelize);
+    const { Objective } = getModels();
     try {
-      const updated = await objectiveModel.update(this.body, { where: { id } });
+      const updated = await Objective.update(this.body, { where: { id } });
       return updated[0] === 1
         ? "Objetivo actualizado correctamente."
         : new Error("No se encontró el objetivo.");
@@ -39,9 +37,9 @@ export class ObjectiveService {
   }
 
   async deleteObjective(id) {
-    const objectiveModel = Objective(this.sequelize);
+    const { Objective } = getModels();
     try {
-      const deleted = await objectiveModel.destroy({ where: { id } });
+      const deleted = await Objective.destroy({ where: { id } });
       return deleted === 1
         ? "Objetivo eliminado correctamente."
         : new Error("No se encontró el objetivo.");

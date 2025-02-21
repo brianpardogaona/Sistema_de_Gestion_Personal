@@ -23,9 +23,12 @@ app.use(cors({
 
 //  allows saving the token in cookies
 app.use(cookieParser());
+
 // routes
 app.use('/api/user', user);
 app.use('/api/goal', goal);
 app.use('/api/objective', objective);
+
+
 
 export default app;

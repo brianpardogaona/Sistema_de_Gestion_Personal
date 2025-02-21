@@ -1,18 +1,34 @@
-import config from "./config.js";
 import app from "./app.js";
-import connectToPostgres from "./DB/connection.js"
+import connectToPostgres from "./DB/connection.js";
 import createTables from "./models/index.js";
 
 
-// Server is listening
-app.listen(app.get('port'), () => {
-    console.log("Server listening on port ", app.get("port"));
-});
+let models = null; 
 
-// Connection with DB
-config.postgres.client = await connectToPostgres();
+export async function startServer() {
+  try {
+    // BD connection
+    const sequelize = await connectToPostgres();
+    
+    models = await createTables(sequelize);
 
-// Tables creation
-createTables(config.postgres.client);
+    // Initialize server
+    app.listen(app.get('port'), () => {
+      console.log("Server listening on port ", app.get("port"));
+    });
+
+    return models;
+  } catch (error) {
+    console.error("Error starting the server:", error);
+  }
+}
 
 
+startServer();
+
+export function getModels() {
+  if (!models) {
+    throw new Error("❌ Models are not initialized yet. Wait for startServer()");
+  }
+  return models;
+}

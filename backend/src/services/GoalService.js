@@ -1,16 +1,13 @@
-import Goal from "../models/Goal.js";
-import config from "../config.js";
+import {getModels} from "../index.js";
 
 export class GoalService {
   constructor(body = {}) {
-    this.sequelize = config.postgres.client;
     this.body = body;
   }
-
   async createGoal() {
-    const goalModel = Goal(this.sequelize);
+    const { Goal } = await getModels();
     try {
-      const newGoal = await goalModel.create(this.body);
+      const newGoal = await Goal.create(this.body);
       return newGoal;
     } catch (error) {
       return error;
@@ -18,11 +15,10 @@ export class GoalService {
   }
 
   async deleteGoal() {
-    const goalModel = Goal(this.sequelize);
     const { id } = this.body;
-    
+    const { Goal } = await getModels();
     try {
-      const deleted = await goalModel.destroy({ where: { id } });
+      const deleted = await Goal.destroy({ where: { id } });
       return deleted ? "Meta eliminada correctamente." : new Error("La meta no existe.");
     } catch (error) {
       return error;
@@ -30,11 +26,11 @@ export class GoalService {
   }
 
   async modifyGoal() {
-    const goalModel = Goal(this.sequelize);
     const { id, ...updates } = this.body;
+    const { Goal } = await getModels();
 
     try {
-      const updated = await goalModel.update(updates, { where: { id } });
+      const updated = await Goal.update(updates, { where: { id } });
       return updated[0] ? "Meta actualizada correctamente." : new Error("No se encontró la meta.");
     } catch (error) {
       return error;
@@ -42,11 +38,11 @@ export class GoalService {
   }
 
   async toggleGoalState() {
-    const goalModel = Goal(this.sequelize);
     const { id } = this.body;
+    const { Goal } = await getModels();
 
     try {
-      const goal = await goalModel.findByPk(id);
+      const goal = await Goal.findByPk(id);
       if (!goal) return new Error("Meta no encontrada.");
 
       const newState =
@@ -65,22 +61,22 @@ export class GoalService {
   }
 
   async getUserGoals() {
-    const goalModel = Goal(this.sequelize);
-    const objectiveModel = Objective(this.sequelize);
-
     try {
-      const goals = await goalModel.findAll({
+      const { Goal, Objective } = await getModels();
+      const goals = await Goal.findAll({
         where: { userId: this.body.userId },
         include: [
           {
-            model: objectiveModel,
-            as: "objectives",
+            model: Objective,
+            as: "goalObjectives", 
+            required: false, 
           },
         ],
       });
 
-      return goals.length ? goals : new Error("No se encontraron metas para este usuario.");
+      return goals;
     } catch (error) {
+      console.error("Error fetching goals: ", error);
       return error;
     }
   }

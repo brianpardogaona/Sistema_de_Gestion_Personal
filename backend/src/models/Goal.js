@@ -49,6 +49,5 @@ export default (sequelize) => {
     }
   );
 
-
   return Goal;
 };

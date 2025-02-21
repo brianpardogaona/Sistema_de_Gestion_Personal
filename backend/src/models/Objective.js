@@ -23,6 +23,7 @@ export default (sequelize) => {
       goalId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        field: "goalId",
         references: {
           model: "Goal",
           key: "id",
