@@ -155,3 +155,10 @@
     width: 100%;
   }
 }
+
+.no-metas {
+  text-align: center;
+  font-size: 18px;
+  color: gray;
+  margin-top: 20px;
+}

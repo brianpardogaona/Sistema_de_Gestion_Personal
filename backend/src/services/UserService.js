@@ -8,7 +8,7 @@ export class UserService {
   }
 
   async getAllUsers() {
-    const { User } = getModels();
+    const { User } = await getModels();
     try {
       const allUsers = await User.findAll();
       return allUsers.map((u) => u.dataValues);
@@ -18,7 +18,7 @@ export class UserService {
   }
 
   async getUser() {
-    const { User } = getModels();
+    const { User } = await getModels();
     const userId = this.body.id;
 
     try {
@@ -30,7 +30,7 @@ export class UserService {
   }
 
   async login() {
-    const { User } = getModels();
+    const { User } = await getModels();
     const { username, password } = this.body;
 
     try {
@@ -64,7 +64,7 @@ export class UserService {
   }
 
   async deleteUser() {
-    const { User } = getModels();
+    const { User } = await getModels();
     const id = this.body.id;
 
     try {
@@ -76,15 +76,19 @@ export class UserService {
   }
 
   async modifyUser() {
-    const { User } = getModels();
+    const { User } = await getModels(); 
     const { id, ...updates } = this.body;
   
     try {
       if (Object.keys(updates).length === 0) {
         throw new Error("No se proporcionaron datos para actualizar.");
       }
-  
+
+      if (updates.username) Validation.username(updates.username);
+      if (updates.name) Validation.name(updates.name);
+      if (updates.lastName) Validation.name(updates.lastName);
       if (updates.password) {
+        Validation.password(updates.password);
         updates.password = await bcrypt.hash(updates.password, Number(process.env.SALTS_ROUNDS));
       }
   

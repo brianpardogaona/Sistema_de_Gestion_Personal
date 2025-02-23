@@ -89,8 +89,19 @@ router.delete("/:id", async (req, res) => {
 // Modify user
 router.patch("/:id", async (req, res) => {
   const id = req.params.id;
-  const user = new UserService(req.body);
-  user.modifyUser();
+  const userService = new UserService({ id, ...req.body });
+
+  try {
+    const result = await userService.modifyUser();
+
+    if (!(result instanceof Error)) {
+      res.status(200).json({ message: result });
+    } else {
+      res.status(400).json({ error: result.message });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 });
 
 export default router;

@@ -24,8 +24,7 @@ export default async function createTables(sequelize) {
 
 
     // BD Sync
-    // await sequelize.sync({ alter: true });
-    console.log("✅ All tables were successfully synchronized.");
+    // await sequelize.sync({ alter: true }); console.log("✅ All tables were successfully synchronized.");
 
     return { User, Goal, Objective };  
   } catch (error) {

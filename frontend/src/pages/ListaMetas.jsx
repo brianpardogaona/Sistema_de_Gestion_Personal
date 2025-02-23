@@ -1,38 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/lista.css";
 
-const metasData = [
-  {
-    id: 1,
-    nombre: "Mejorar Ventas",
-    fechaCreacion: "2024-01-15",
-    fecha: "2024-02-01",
-    objetivos: [
-      { id: 1, nombre: "Aumentar clientes en un 20%", fechaCreacion: "2024-01-16", fecha: "2024-02-02", estado: "" },
-      { id: 2, nombre: "Incrementar la publicidad", fechaCreacion: "2024-01-17", fecha: "2024-02-03", estado: "" },
-    ],
-  },
-  {
-    id: 2,
-    nombre: "Optimizar Gastos",
-    fechaCreacion: "2024-01-10",
-    fecha: "2024-01-20",
-    objetivos: [
-      { id: 3, nombre: "Reducir costos operativos", fechaCreacion: "2024-01-11", fecha: "2024-01-21", estado: "" },
-      { id: 4, nombre: "Negociar con proveedores", fechaCreacion: "2024-01-12", fecha: "2024-01-22", estado: "" },
-    ],
-  },
-  {
-    id: 3,
-    nombre: "Lanzar Nuevo Producto",
-    fechaCreacion: "2024-02-01",
-    fecha: "2024-03-05",
-    objetivos: [],
-  },
-];
-
-const estadosObjetivo = ["", "En progreso", "Completado"];
+const estadosObjetivo = {
+  pending: "Pendiente",
+  inprogress: "En progreso",
+  completed: "Completado",
+};
 
 function formatearFecha(fechaStr) {
   const meses = [
@@ -44,12 +18,36 @@ function formatearFecha(fechaStr) {
 }
 
 function ListaMetas() {
-  const [metas, setMetas] = useState(metasData);
+  const [metas, setMetas] = useState([]);
   const [desplegadas, setDesplegadas] = useState({});
   const [filtro, setFiltro] = useState("fecha");
   const [ordenAscendente, setOrdenAscendente] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMetas = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/goal/user/b3366df3-9974-473b-bb52-34668e904280");
+        if (!response.ok) throw new Error("Error al obtener las metas");
+        const data = await response.json();
+
+        console.log("Datos obtenidos:", data);
+
+        if (Array.isArray(data)) {
+          setMetas(data); 
+        } else {
+          console.error("La API no devuelve un array:", data);
+          setMetas([]); 
+        }
+      } catch (error) {
+        console.error("Error cargando las metas:", error);
+        setMetas([]);
+      }
+    };
+
+    fetchMetas();
+  }, []);
 
   const toggleOrden = () => {
     setOrdenAscendente(!ordenAscendente);
@@ -65,23 +63,25 @@ function ListaMetas() {
   const handleEstadoCambio = (metaId, objId, nuevoEstado) => {
     setMetas((prevMetas) =>
       prevMetas.map((meta) => {
-        const nuevosObjetivos = meta.objetivos.map((obj) =>
-          obj.id === objId ? { ...obj, estado: nuevoEstado } : obj
+        const nuevosObjetivos = meta.goalObjectives.map((obj) =>
+          obj.id === objId ? { ...obj, state: nuevoEstado } : obj
         );
-        const todosCompletos = nuevosObjetivos.length > 0 && nuevosObjetivos.every((obj) => obj.estado === "Completado");
-        return meta.id === metaId ? { ...meta, objetivos: nuevosObjetivos, estado: todosCompletos ? "Completada" : "" } : meta;
+
+        const todosCompletos = nuevosObjetivos.length > 0 && nuevosObjetivos.every((obj) => obj.state === "completed");
+
+        return meta.id === metaId ? { ...meta, goalObjectives: nuevosObjetivos, state: todosCompletos ? "completed" : meta.state } : meta;
       })
     );
   };
 
-  const metasFiltradas = metas
-    .filter((meta) => meta.nombre.toLowerCase().includes(busqueda))
+  const metasFiltradas = Array.isArray(metas) ? metas
+    .filter((meta) => meta.title && meta.title.toLowerCase().includes(busqueda))
     .sort((a, b) => {
       if (filtro === "nombre") {
-        return ordenAscendente ? a.nombre.localeCompare(b.nombre) : b.nombre.localeCompare(a.nombre);
+        return ordenAscendente ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
       }
-      return ordenAscendente ? new Date(a.fecha) - new Date(b.fecha) : new Date(b.fecha) - new Date(a.fecha);
-    });
+      return ordenAscendente ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt);
+    }) : [];
 
   return (
     <div className="lista-metas">
@@ -106,49 +106,53 @@ function ListaMetas() {
         </button>
       </div>
 
-      {metasFiltradas.map((meta) => (
-        <div key={meta.id} className="meta">
-          <div className="meta-header">
-            <span className="meta-nombre">{meta.nombre}</span>
-            <span className="meta-fecha">{formatearFecha(meta.fechaCreacion)}</span>
-            {meta.estado === "Completada" && <span className="meta-completada">✔️</span>}
-            <button
-              className="info-btn"
-              onClick={() => navigate(`/info-meta/${meta.id}`)}
-            >
-              ℹ️
-            </button>
-            {meta.objetivos.length > 0 && (
+      {metasFiltradas.length > 0 ? (
+        metasFiltradas.map((meta) => (
+          <div key={meta.id} className="meta">
+            <div className="meta-header">
+              <span className="meta-nombre">{meta.title}</span>
+              <span className="meta-fecha">{formatearFecha(meta.createdAt)}</span>
+              {meta.state === "completed" && <span className="meta-completada">✔️</span>}
               <button
-                className="desplegar-btn"
-                onClick={() =>
-                  setDesplegadas((prev) => ({ ...prev, [meta.id]: !prev[meta.id] }))
-                }
+                className="info-btn"
+                onClick={() => navigate(`/info-meta/${meta.id}`)}
               >
-                {desplegadas[meta.id] ? "▲" : "▼"}
+                ℹ️
               </button>
+              {meta.goalObjectives.length > 0 && (
+                <button
+                  className="desplegar-btn"
+                  onClick={() =>
+                    setDesplegadas((prev) => ({ ...prev, [meta.id]: !prev[meta.id] }))
+                  }
+                >
+                  {desplegadas[meta.id] ? "▲" : "▼"}
+                </button>
+              )}
+            </div>
+
+            {desplegadas[meta.id] && (
+              <ul className="objetivos">
+                {meta.goalObjectives.map((obj) => (
+                  <li key={obj.id}>
+                    {obj.title} <span className="fecha">{formatearFecha(obj.createdAt)}</span>
+                    <select
+                      value={obj.state}
+                      onChange={(e) => handleEstadoCambio(meta.id, obj.id, e.target.value)}
+                    >
+                      {Object.entries(estadosObjetivo).map(([key, value]) => (
+                        <option key={key} value={key}>{value}</option>
+                      ))}
+                    </select>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
-
-          {desplegadas[meta.id] && (
-            <ul className="objetivos">
-              {meta.objetivos.map((obj) => (
-                <li key={obj.id}>
-                  {obj.nombre} <span className="fecha">{formatearFecha(obj.fechaCreacion)}</span>
-                  <select
-                    value={obj.estado}
-                    onChange={(e) => handleEstadoCambio(meta.id, obj.id, e.target.value)}
-                  >
-                    {estadosObjetivo.map((estado, index) => (
-                      <option key={index} value={estado}>{estado || "Sin estado"}</option>
-                    ))}
-                  </select>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ))}
+        ))
+      ) : (
+        <p className="no-metas">No hay metas disponibles.</p>
+      )}
     </div>
   );
 }
