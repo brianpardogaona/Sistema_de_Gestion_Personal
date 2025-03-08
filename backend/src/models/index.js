@@ -1,6 +1,5 @@
-// models/index.js
-
 import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcrypt";
 import UserModel from "./User.js";
 import GoalModel from "./Goal.js";
 import ObjectiveModel from "./Objective.js";
@@ -22,13 +21,30 @@ export default async function createTables(sequelize) {
     User.hasMany(Objective, { foreignKey: "userId", as: "userObjectives" });
     Objective.belongsTo(User, { foreignKey: "userId", as: "user" });
 
+    if (process.env.SYNC_DB === "force") {
+      await sequelize.sync({ force: true });
+      const hashedPassword = await bcrypt.hash(
+        "12345678",
+        Number(process.env.SALTS_ROUNDS) || 10
+      );
+      await User.create({
+        id: uuidv4(),
+        username: "brian",
+        password: hashedPassword,
+        name: "Admin",
+        lastName: "Root",
+      });
+      console.log("✅ Default root user created. DB Restarted");
 
-    // BD Sync
-    // await sequelize.sync({ alter: true }); console.log("✅ All tables were successfully synchronized.");
+    } else if (process.env.SYNC_DB === "alter") {
+      await sequelize.sync({ alter: true }); console.log("✅ All tables were successfully synchronized.");
+    }
 
-    return { User, Goal, Objective };  
+  
+
+    return { User, Goal, Objective };
   } catch (error) {
     console.error("❌ Error synchronizing the database:", error);
-    throw error; 
+    throw error;
   }
 }
