@@ -40,14 +40,22 @@ router.put("/:id", async (req, res) => {
 
 // Toggle objective state
 router.patch("/:id/toggle", async (req, res) => {
+  console.log("Test" + req.body.state);
   try {
+    const { state } = req.body;
     const objectiveService = new ObjectiveService();
-    const toggledObjective = await objectiveService.toggleObjectiveState(req.params.id);
-    res.status(200).json(toggledObjective);
+    const result = await objectiveService.toggleObjectiveState(req.params.id, state);
+
+    if (!(result instanceof Error)) {
+      res.status(200).json({ message: result });
+    } else {
+      res.status(400).json({ error: result.message });
+    }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
 
 // Get user objectives
 router.get("/user/:userId", async (req, res) => {
@@ -59,5 +67,8 @@ router.get("/user/:userId", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+
+
 
 export default router;
