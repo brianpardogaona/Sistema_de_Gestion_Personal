@@ -2,7 +2,7 @@
   display: flex;
   height: 100vh;
   min-width: 700px;
-  background-color: #121212; 
+  background-color: #121212;
 }
 
 .login-container h1 {
@@ -37,7 +37,7 @@
   width: 60%;
   max-width: 250px;
   padding: 10px;
-  background-color: #5a9ec9; 
+  background-color: #5a9ec9;
   color: #ffffff;
   font-weight: bold;
   border-radius: 5px;
@@ -45,17 +45,16 @@
 }
 
 #register-button:hover {
-  background-color: #4682a9; 
+  background-color: #4682a9;
 }
-
 
 #right-side {
   display: flex;
   flex-direction: column;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
   width: 60%;
-  height: 100vh; 
+  height: 100vh;
 }
 
 #right-side h1 {
@@ -120,4 +119,26 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease, transform 1s ease;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: shake 0.3s ease-in-out;
 }
