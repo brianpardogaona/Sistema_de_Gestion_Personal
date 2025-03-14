@@ -1,4 +1,4 @@
-import { Home, Star, Search, User, LogOut } from "lucide-react";
+import { Home, Star, Search, User, LogOut, List } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/navBar.css";
 
@@ -18,19 +18,20 @@ export default function Navbar() {
             onClick={() => navigate("/inicio")}
           />
           <NavItem
+            icon={<List size={18} />}
+            text="Agenda"
+            path="/agenda"
+            activePath={location.pathname}
+            onClick={() => navigate("/agenda")}
+          />
+          <NavItem
             icon={<Star size={18} />}
             text="Mis Metas"
             path="/mis-metas"
             activePath={location.pathname}
             onClick={() => navigate("/mis-metas")}
           />
-          <NavItem
-            icon={<Search size={18} />}
-            text="Buscador de Metas"
-            path="/buscador-metas"
-            activePath={location.pathname}
-            onClick={() => navigate("/buscador-metas")}
-          />
+          
           <NavItem
             icon={<User size={18} />}
             text="Mi Cuenta"
