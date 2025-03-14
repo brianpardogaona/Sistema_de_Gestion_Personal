@@ -1,5 +1,5 @@
 import React from "react";
-import NavBar from "../components/navBar/NavBar";
+import NavBar from "./NavBar";
 
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";

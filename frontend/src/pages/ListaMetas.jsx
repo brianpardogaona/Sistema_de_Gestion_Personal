@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/lista.css";
 
+const API_URL = "http://localhost:4000/api/";
+
 const estadosObjetivo = {
   pending: "Pendiente",
   inprogress: "En progreso",
@@ -28,17 +30,17 @@ function ListaMetas() {
   useEffect(() => {
     const fetchMetas = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/goal/user/b3366df3-9974-473b-bb52-34668e904280");
+        const response = await fetch(API_URL + "goal/user/059b23f5-059b-4685-833c-5dd9c37f045e");
         if (!response.ok) throw new Error("Error al obtener las metas");
         const data = await response.json();
 
         console.log("Datos obtenidos:", data);
 
         if (Array.isArray(data)) {
-          setMetas(data); 
+          setMetas(data);
         } else {
           console.error("La API no devuelve un array:", data);
-          setMetas([]); 
+          setMetas([]);
         }
       } catch (error) {
         console.error("Error cargando las metas:", error);
@@ -49,9 +51,7 @@ function ListaMetas() {
     fetchMetas();
   }, []);
 
-  const toggleOrden = () => {
-    setOrdenAscendente(!ordenAscendente);
-  };
+  const toggleOrden = () => setOrdenAscendente(!ordenAscendente);
 
   const handleFiltroChange = (e) => {
     setFiltro(e.target.value);
@@ -60,19 +60,43 @@ function ListaMetas() {
 
   const handleBusquedaChange = (e) => setBusqueda(e.target.value.toLowerCase());
 
-  const handleEstadoCambio = (metaId, objId, nuevoEstado) => {
-    setMetas((prevMetas) =>
-      prevMetas.map((meta) => {
-        const nuevosObjetivos = meta.goalObjectives.map((obj) =>
-          obj.id === objId ? { ...obj, state: nuevoEstado } : obj
-        );
+  
+  const handleEstadoCambioAPI = async (metaId, objId, nuevoEstado) => {
+    console.log("Intentando actualizar estado:", { objId, nuevoEstado });
+  
+    try {
+      const response = await fetch(`${API_URL}objective/${objId}/toggle`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ state: nuevoEstado }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al actualizar el estado");
+      }
+  
+      const data = await response.json();
+      console.log("Respuesta de la API:", data);
 
-        const todosCompletos = nuevosObjetivos.length > 0 && nuevosObjetivos.every((obj) => obj.state === "completed");
-
-        return meta.id === metaId ? { ...meta, goalObjectives: nuevosObjetivos, state: todosCompletos ? "completed" : meta.state } : meta;
-      })
-    );
+      setMetas((prevMetas) =>
+        prevMetas.map((meta) => {
+          const nuevosObjetivos = meta.goalObjectives.map((obj) =>
+            obj.id === objId ? { ...obj, state: nuevoEstado } : obj
+          );
+  
+          const todosCompletos = nuevosObjetivos.every((obj) => obj.state === "completed");
+  
+          return meta.id === metaId
+            ? { ...meta, goalObjectives: nuevosObjetivos, state: todosCompletos ? "completed" : meta.state }
+            : meta;
+        })
+      );
+    } catch (error) {
+      console.error("Error al cambiar estado del objetivo:", error.message);
+    }
   };
+  
 
   const metasFiltradas = Array.isArray(metas) ? metas
     .filter((meta) => meta.title && meta.title.toLowerCase().includes(busqueda))
@@ -133,19 +157,22 @@ function ListaMetas() {
 
             {desplegadas[meta.id] && (
               <ul className="objetivos">
-                {meta.goalObjectives.map((obj) => (
-                  <li key={obj.id}>
-                    {obj.title} <span className="fecha">{formatearFecha(obj.createdAt)}</span>
-                    <select
-                      value={obj.state}
-                      onChange={(e) => handleEstadoCambio(meta.id, obj.id, e.target.value)}
-                    >
-                      {Object.entries(estadosObjetivo).map(([key, value]) => (
-                        <option key={key} value={key}>{value}</option>
-                      ))}
-                    </select>
-                  </li>
-                ))}
+                {meta.goalObjectives
+                  .slice() 
+                  .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                  .map((obj) => (
+                    <li key={obj.id}>
+                      {obj.title} <span className="fecha">{formatearFecha(obj.createdAt)}</span>
+                      <select
+                        value={obj.state}
+                        onChange={(e) => handleEstadoCambioAPI(meta.id, obj.id, e.target.value)}
+                      >
+                        {Object.entries(estadosObjetivo).map(([key, value]) => (
+                          <option key={key} value={key}>{value}</option>
+                        ))}
+                      </select>
+                    </li>
+                  ))}
               </ul>
             )}
           </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import "../styles/miCuenta.css";
-import NavBar from "@/components/navBar/NavBar";
+import NavBar from "./NavBar";
 
 function MiCuenta() {
   const [editMode, setEditMode] = useState(false);
@@ -21,24 +21,41 @@ function MiCuenta() {
       <div className="account-container">
         <h1 className="title">MI CUENTA</h1>
         <div className={`account-box ${editMode ? "editar-activo" : ""}`}>
-          <img src="../../public/images/perfil.png" alt="Usuario" className="user-image" />
+          <img
+            src="../../public/images/perfil.png"
+            alt="Usuario"
+            className="user-image"
+          />
           <div className="inputs-container">
-            <label>Nombre</label>
-            <Input type="text" defaultValue="Brian" disabled={!editMode} />
-
-            <label>Apellidos</label>
-            <Input type="text" defaultValue="López" disabled={!editMode} />
-
-            <label>Nombre de usuario</label>
-            <Input type="text" defaultValue="brian123" disabled={!editMode} />
+            <div className="nombre-apellidos">
+              <div className="input-group">
+                <label>NOMBRE</label>
+                <Input type="text" defaultValue="Nombre" disabled={!editMode} />
+              </div>
+              <div className="input-group">
+                <label>APELLIDOS</label>
+                <Input
+                  type="text"
+                  defaultValue="Apellido"
+                  disabled={!editMode}
+                />
+              </div>
+            </div>
+            <br />
+            <label>NOMBRE DE USUARIO</label>
+            <Input type="text" defaultValue="user123" disabled={!editMode} />
 
             {editMode && (
               <>
-                <label>Contraseña</label>
+                <br />
+                <label>CONTRASEÑA</label>
                 <Input type="password" placeholder="Nueva contraseña" />
 
-                <label>Confirmar contraseña</label>
-                <Input type="password" placeholder="Confirmar nueva contraseña" />
+                <label>CONFIRMAR CONTRASEÑA</label>
+                <Input
+                  type="password"
+                  placeholder="Confirmar nueva contraseña"
+                />
               </>
             )}
           </div>

@@ -16,8 +16,8 @@ function Grafica() {
       {
         label: "Objetivos por mes",
         data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgba(0, 0, 0, 0.2)",
+        borderColor: "rgb(0, 0, 0)",
         borderWidth: 1,
       },
     ],
