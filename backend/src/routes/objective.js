@@ -1,14 +1,16 @@
 import express from "express";
-
-// services
+import { authenticateToken } from "./middleware/authMiddleware.js";
 import { ObjectiveService } from "../services/ObjectiveService.js";
 
 const router = express.Router();
 
 // Create objective
-router.post("/create", async (req, res) => {
+router.post("/create", authenticateToken, async (req, res) => {
   try {
-    const objectiveService = new ObjectiveService(req.body);
+    const objectiveService = new ObjectiveService({
+      userId: req.user.id,
+      ...req.body,
+    });
     const result = await objectiveService.createObjective();
     res.status(201).json(result);
   } catch (error) {
@@ -17,10 +19,10 @@ router.post("/create", async (req, res) => {
 });
 
 // Delete objective
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const objectiveService = new ObjectiveService();
-    await objectiveService.deleteObjective(req.params.id);
+    await objectiveService.deleteObjective(req.params.id, req.user.id);
     res.status(204).send();
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -28,10 +30,15 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Modify objective
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticateToken, async (req, res) => {
   try {
-    const objectiveService = new ObjectiveService(req.body);
-    const updatedObjective = await objectiveService.updateObjective(req.params.id);
+    const objectiveService = new ObjectiveService({
+      userId: req.user.id,
+      ...req.body,
+    });
+    const updatedObjective = await objectiveService.updateObjective(
+      req.params.id
+    );
     res.status(200).json(updatedObjective);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -39,12 +46,14 @@ router.put("/:id", async (req, res) => {
 });
 
 // Toggle objective state
-router.patch("/:id/toggle", async (req, res) => {
-  console.log("Test" + req.body.state);
+router.patch("/:id/toggle", authenticateToken, async (req, res) => {
   try {
     const { state } = req.body;
     const objectiveService = new ObjectiveService();
-    const result = await objectiveService.toggleObjectiveState(req.params.id, state);
+    const result = await objectiveService.toggleObjectiveState(
+      req.params.id,
+      state
+    );
 
     if (!(result instanceof Error)) {
       res.status(200).json({ message: result });
@@ -56,19 +65,44 @@ router.patch("/:id/toggle", async (req, res) => {
   }
 });
 
-
 // Get user objectives
-router.get("/user/:userId", async (req, res) => {
+router.get("/user", authenticateToken, async (req, res) => {
   try {
     const objectiveService = new ObjectiveService();
-    const objectives = await objectiveService.getObjectivesByGoalId(req.params.userId);
+    const objectives = await objectiveService.getObjectivesByUserId(
+      req.user.id
+    );
     res.status(200).json(objectives);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
+// Get user objectives filtered by state
+router.get("/user/state/:state", authenticateToken, async (req, res) => {
+  try {
+    const { state } = req.params;
+    const validStates = ["pending", "inprogress", "completed"];
 
+    if (!validStates.includes(state)) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Estado inválido. Debe ser 'pending', 'inprogress' o 'completed'.",
+        });
+    }
 
+    const objectiveService = new ObjectiveService();
+    const objectives = await objectiveService.getObjectivesByState(
+      req.user.id,
+      state
+    );
+
+    res.status(200).json(objectives);
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
 
 export default router;

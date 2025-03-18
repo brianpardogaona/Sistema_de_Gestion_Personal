@@ -1,5 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import { authenticateToken } from "./middleware/authMiddleware.js";
 
 // services
 import { UserService } from "../services/UserService.js";
@@ -12,47 +13,46 @@ router.get("/", async (req, res) => {
   res.send(await user.getAllUsers());
 });
 
-// Get user by id
-router.get("/:id", async (req, res) => {
-  const userId = req.params.id;
-  const body = { id: userId };
-
-  const user = new UserService(body);
-
-  const foundUser = await user.getUser();
-  if (!(foundUser instanceof Error)) {
-    res.send(foundUser);
-  } else {
-    res
-      .status(400)
-      .json({ error: "No se ha encontrado el usuario o no existe." });
-  }
-});
-
 // Login
 router.post("/login", async (req, res) => {
-  const user = new UserService(req.body);
+  const userService = new UserService(req.body);
 
   try {
-    const foundedUser = await user.login();
+    const foundedUser = await userService.login();
     const token = jwt.sign(
       {
         id: foundedUser.dataValues.id,
         username: foundedUser.dataValues.username,
       },
       process.env.SECRET_JWT_KEY,
-      {
-        expiresIn: "1h",
-      }
+      { expiresIn: "1h" }
     );
+
     res
-      .cookie('acces-token', token, {
+      .cookie("access-token", token, {
         httpOnly: true,
-        sameSite: 'lax'
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
       })
-      .send({foundedUser, token});
+      .json({ message: "Inicio de sesión exitoso", user: foundedUser });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Obtener perfil del usuario autenticado
+router.get("/profile", authenticateToken, async (req, res) => {
+  try {
+    const userService = new UserService({ id: req.user.id });
+    const user = await userService.getUserProfile();
+
+    if (!(user instanceof Error)) {
+      res.status(200).json(user);
+    } else {
+      res.status(400).json({ error: user.message });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 

@@ -1,11 +1,12 @@
 import express from "express";
+import { authenticateToken } from "./middleware/authMiddleware.js";
 import { GoalService } from "../services/GoalService.js";
 
 const router = express.Router();
 
 // Create goal
-router.post("/create", async (req, res) => {
-  const goalService = new GoalService(req.body);
+router.post("/create", authenticateToken, async (req, res) => {
+  const goalService = new GoalService({ userId: req.user.id, ...req.body });
   const result = await goalService.createGoal();
 
   if (!(result instanceof Error)) {
@@ -16,8 +17,11 @@ router.post("/create", async (req, res) => {
 });
 
 // Delete goal
-router.delete("/:id", async (req, res) => {
-  const goalService = new GoalService({ id: req.params.id });
+router.delete("/:id", authenticateToken, async (req, res) => {
+  const goalService = new GoalService({
+    id: req.params.id,
+    userId: req.user.id,
+  });
   const result = await goalService.deleteGoal();
 
   if (!(result instanceof Error)) {
@@ -28,8 +32,12 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Modify goal
-router.patch("/:id", async (req, res) => {
-  const goalService = new GoalService({ id: req.params.id, ...req.body });
+router.patch("/:id", authenticateToken, async (req, res) => {
+  const goalService = new GoalService({
+    id: req.params.id,
+    userId: req.user.id,
+    ...req.body,
+  });
   const result = await goalService.modifyGoal();
 
   if (!(result instanceof Error)) {
@@ -40,8 +48,11 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Toggle goal state
-router.patch("/:id/toggle", async (req, res) => {
-  const goalService = new GoalService({ id: req.params.id });
+router.patch("/:id/toggle", authenticateToken, async (req, res) => {
+  const goalService = new GoalService({
+    id: req.params.id,
+    userId: req.user.id,
+  });
   const result = await goalService.toggleGoalState();
 
   if (!(result instanceof Error)) {
@@ -52,14 +63,17 @@ router.patch("/:id/toggle", async (req, res) => {
 });
 
 // Get user goals
-router.get("/user/:userId", async (req, res) => {
-  const goalService = new GoalService({ userId: req.params.userId });
-  const result = await goalService.getUserGoals();
+router.get("/user", authenticateToken, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Usuario no autenticado" });
+    }
 
-  if (!(result instanceof Error)) {
-    res.json(result);
-  } else {
-    res.status(400).json({ error: result.message });
+    const goalService = new GoalService(req.user);
+    const goals = await goalService.getUserGoals();
+    res.status(200).json(goals);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

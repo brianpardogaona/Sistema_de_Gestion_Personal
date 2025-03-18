@@ -40,23 +40,30 @@ function ListaMetas() {
   const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
 
+  const getTokenFromCookies = async () => {
+    const cookies = document.cookie.split("; ");
+    const tokenCookie = cookies.find((row) => row.startsWith("access-token="));
+    return tokenCookie ? tokenCookie.split("=")[1] : null;
+  };
+
   useEffect(() => {
     const fetchMetas = async () => {
       try {
-        const response = await fetch(
-          API_URL + "goal/user/059b23f5-059b-4685-833c-5dd9c37f045e"
-        );
-        if (!response.ok) throw new Error("Error al obtener las metas");
-        const data = await response.json();
+        const response = await fetch("http://localhost:4000/api/goal/user", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-        console.log("Datos obtenidos:", data);
-
-        if (Array.isArray(data)) {
-          setMetas(data);
-        } else {
-          console.error("La API no devuelve un array:", data);
-          setMetas([]);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error al obtener las metas: ${errorText}`);
         }
+
+        const data = await response.json();
+        setMetas(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error cargando las metas:", error);
         setMetas([]);
@@ -76,41 +83,27 @@ function ListaMetas() {
   const handleBusquedaChange = (e) => setBusqueda(e.target.value.toLowerCase());
 
   const handleEstadoCambioAPI = async (metaId, objId, nuevoEstado) => {
-    console.log("Intentando actualizar estado:", { objId, nuevoEstado });
-
     try {
       const response = await fetch(`${API_URL}objective/${objId}/toggle`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ state: nuevoEstado }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Error al actualizar el estado");
-      }
+      if (!response.ok) throw new Error("Error al actualizar el estado");
 
       const data = await response.json();
-      console.log("Respuesta de la API:", data);
 
       setMetas((prevMetas) =>
-        prevMetas.map((meta) => {
-          const nuevosObjetivos = meta.goalObjectives.map((obj) =>
+        prevMetas.map((meta) => ({
+          ...meta,
+          goalObjectives: meta.goalObjectives.map((obj) =>
             obj.id === objId ? { ...obj, state: nuevoEstado } : obj
-          );
-
-          const todosCompletos = nuevosObjetivos.every(
-            (obj) => obj.state === "completed"
-          );
-
-          return meta.id === metaId
-            ? {
-                ...meta,
-                goalObjectives: nuevosObjetivos,
-                state: todosCompletos ? "completed" : meta.state,
-              }
-            : meta;
-        })
+          ),
+        }))
       );
     } catch (error) {
       console.error("Error al cambiar estado del objetivo:", error.message);

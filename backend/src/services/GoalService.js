@@ -1,4 +1,4 @@
-import {getModels} from "../index.js";
+import { getModels } from "../index.js";
 
 export class GoalService {
   constructor(body = {}) {
@@ -19,7 +19,9 @@ export class GoalService {
     const { Goal } = await getModels();
     try {
       const deleted = await Goal.destroy({ where: { id } });
-      return deleted ? "Meta eliminada correctamente." : new Error("La meta no existe.");
+      return deleted
+        ? "Meta eliminada correctamente."
+        : new Error("La meta no existe.");
     } catch (error) {
       return error;
     }
@@ -31,7 +33,9 @@ export class GoalService {
 
     try {
       const updated = await Goal.update(updates, { where: { id } });
-      return updated[0] ? "Meta actualizada correctamente." : new Error("No se encontró la meta.");
+      return updated[0]
+        ? "Meta actualizada correctamente."
+        : new Error("No se encontró la meta.");
     } catch (error) {
       return error;
     }
@@ -64,12 +68,12 @@ export class GoalService {
     try {
       const { Goal, Objective } = await getModels();
       const goals = await Goal.findAll({
-        where: { userId: this.body.userId },
+        where: { userId: this.body.id },
         include: [
           {
             model: Objective,
-            as: "goalObjectives", 
-            required: false, 
+            as: "goalObjectives",
+            required: false,
           },
         ],
       });

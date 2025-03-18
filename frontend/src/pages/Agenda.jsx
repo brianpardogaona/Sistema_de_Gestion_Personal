@@ -8,11 +8,23 @@ const API_URL = "http://localhost:4000/api/";
 
 function formatearFecha(fechaStr) {
   const meses = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
   ];
   const fecha = new Date(fechaStr);
-  return `${fecha.getDate()} de ${meses[fecha.getMonth()]} de ${fecha.getFullYear()}`;
+  return `${fecha.getDate()} de ${
+    meses[fecha.getMonth()]
+  } de ${fecha.getFullYear()}`;
 }
 
 function Agenda() {
@@ -24,23 +36,18 @@ function Agenda() {
   useEffect(() => {
     const fetchObjetivos = async () => {
       try {
-        const response = await fetch(API_URL + "goal/user/059b23f5-059b-4685-833c-5dd9c37f045e");
+        const response = await fetch(
+          API_URL + "objective/user/state/inprogress",
+          {
+            method: "GET",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
         if (!response.ok) throw new Error("Error al obtener los objetivos");
         const data = await response.json();
-
-        if (Array.isArray(data)) {
-          const objetivosExtraidos = data.flatMap(meta =>
-            meta.goalObjectives.map(obj => ({
-              ...obj,
-              metaTitulo: meta.title,
-              metaId: meta.id,
-              metaFecha: meta.createdAt
-            }))
-          );
-          setObjetivos(objetivosExtraidos);
-        } else {
-          setObjetivos([]);
-        }
+        setObjetivos(data);
       } catch (error) {
         console.error("Error cargando los objetivos:", error);
         setObjetivos([]);
@@ -59,9 +66,13 @@ function Agenda() {
 
   const objetivosFiltrados = objetivos.sort((a, b) => {
     if (filtro === "nombre") {
-      return ordenAscendente ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
+      return ordenAscendente
+        ? a.title.localeCompare(b.title)
+        : b.title.localeCompare(a.title);
     }
-    return ordenAscendente ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt);
+    return ordenAscendente
+      ? new Date(a.createdAt) - new Date(b.createdAt)
+      : new Date(b.createdAt) - new Date(a.createdAt);
   });
 
   return (
@@ -91,7 +102,9 @@ function Agenda() {
               <div key={obj.id} className="meta">
                 <div className="meta-header">
                   <span className="meta-nombre">{obj.title}</span>
-                  <span className="meta-fecha">{formatearFecha(obj.createdAt)}</span>
+                  <span className="meta-fecha">
+                    {formatearFecha(obj.createdAt)}
+                  </span>
                   <button
                     className="info-btn"
                     onClick={() => navigate(`/info-meta/${obj.metaId}`)}

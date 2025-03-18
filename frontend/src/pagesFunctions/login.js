@@ -9,15 +9,12 @@ async function login(username, password) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    }).catch((e) => console.log(e));
+      credentials: "include",
+      body: JSON.stringify({ username, password }),
+    });
+
     const data = await response.json();
-
     return { status: response.status, data };
-
   } catch (error) {
     throw error;
   }

@@ -31,14 +31,13 @@ function Login() {
       } else {
         setPasswordIsCorrect(false);
         setErrorAnimation("shake");
-        setTimeout(() => {
-          setErrorAnimation("");
-        }, 300);
+        setTimeout(() => setErrorAnimation(""), 300);
       }
     } catch (e) {
       console.log(e);
     }
   };
+  
 
   const isLoginButtonVisible =
     !passwordIsCorrect || (username !== "" && password !== "");

@@ -15,10 +15,12 @@ app.set('port', config.app.port);
 app.use(express.json());
 
 // allows cors - receive requests from any origin 
+
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:5173", 
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type"], 
+  credentials: true,
 }));
 
 //  allows saving the token in cookies
