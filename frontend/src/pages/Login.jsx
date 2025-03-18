@@ -37,7 +37,6 @@ function Login() {
       console.log(e);
     }
   };
-  
 
   const isLoginButtonVisible =
     !passwordIsCorrect || (username !== "" && password !== "");
@@ -54,7 +53,9 @@ function Login() {
     >
       <div id="left-side">
         <h2>¿Aún no tienes una cuenta?</h2>
-        <Button id="register-button">Regístrate</Button>
+        <Button id="register-button" onClick={() => navigate("/register")}>
+          Regístrate
+        </Button>
       </div>
       <div id="right-side">
         <div id="title">

@@ -59,16 +59,29 @@ router.get("/profile", authenticateToken, async (req, res) => {
 // Register a new user
 router.post("/register", async (req, res) => {
   const userService = new UserService(req.body);
-  const success = await userService.createUser();
 
-  if (!(success instanceof Error)) {
-    res.status(200).json({ message: success });
-  } else {
-    const errorResponse = {
-      error: success.message,
-      code: success.name || "UNKNOWN_ERROR",
-    };
-    res.status(400).json(errorResponse);
+  try {
+    const newUser = await userService.createUser();
+
+    if (newUser instanceof Error) {
+      return res.status(400).json({ error: newUser.message });
+    }
+
+    const token = jwt.sign(
+      { id: newUser.id, username: newUser.username },
+      process.env.SECRET_JWT_KEY,
+      { expiresIn: "1h" }
+    );
+
+    res
+      .cookie("access-token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      })
+      .json({ message: "Registro exitoso", user: newUser });
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
