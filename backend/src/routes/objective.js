@@ -35,7 +35,6 @@ router.get("/completed-per-month", authenticateToken, async (req, res) => {
   }
 });
 
-
 // Delete objective
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
@@ -103,12 +102,10 @@ router.get("/user/state/:state", authenticateToken, async (req, res) => {
     const validStates = ["pending", "inprogress", "completed"];
 
     if (!validStates.includes(state)) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Estado inválido. Debe ser 'pending', 'inprogress' o 'completed'.",
-        });
+      return res.status(400).json({
+        error:
+          "Estado inválido. Debe ser 'pending', 'inprogress' o 'completed'.",
+      });
     }
 
     const objectiveService = new ObjectiveService();
@@ -123,6 +120,22 @@ router.get("/user/state/:state", authenticateToken, async (req, res) => {
   }
 });
 
+// Get general compliance state of objectives
+router.get("/general-completion", authenticateToken, async (req, res) => {
+  try {
+    const objectiveService = new ObjectiveService();
+    const result = await objectiveService.getGeneralObjectiveCompletion(
+      req.user.id
+    );
 
+    if (result instanceof Error) {
+      res.status(500).json({ error: result.message });
+    } else {
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
 
 export default router;
