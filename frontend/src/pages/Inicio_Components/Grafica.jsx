@@ -6,22 +6,54 @@ import "../../styles/chart.css";
 function Grafica() {
   const [activeTab, setActiveTab] = useState("bar");
   const [selectedCharts, setSelectedCharts] = useState([]);
+  const [barChartData, setBarChartData] = useState({ labels: [], datasets: [] });
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
   const doughnutCharts = useRef({});
+  const [goalData, setGoalData] = useState([]);
 
-  const barChartData = {
-    labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio"],
-    datasets: [
-      {
-        label: "Objetivos por mes",
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: "rgba(0, 0, 0, 0.2)",
-        borderColor: "rgb(0, 0, 0)",
-        borderWidth: 1,
-      },
-    ],
-  };
+
+  useEffect(() => {
+    const fetchCompletedGoals = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/objective/completed-per-month", {
+          method: "GET",
+          credentials: "include", 
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const labels = Object.keys(data).map((key) => {
+          const [year, month] = key.split("-");
+          return new Date(year, month - 1).toLocaleString("es-ES", { month: "long" });
+        });
+
+        const values = Object.values(data);
+
+        setBarChartData({
+          labels,
+          datasets: [
+            {
+              label: "Objetivos completados por mes",
+              data: values,
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+              borderColor: "rgb(0, 0, 0)",
+              borderWidth: 1,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+      }
+    };
+
+    fetchCompletedGoals();
+}, []);
+  
 
   const generalChartData = {
     labels: ["Objetivos sin completar","Objetivos completados"],
@@ -35,6 +67,29 @@ function Grafica() {
       },
     ],
   };
+
+  useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/goal/user/goals-completion", {
+          method: "GET",
+          credentials: "include",
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        setGoalData(data);
+      } catch (error) {
+        console.error("Error obteniendo los objetivos:", error);
+      }
+    };
+  
+    fetchGoals();
+  }, []);
+  
 
   const doughnutDataSets = {
     Ventas: [30, 70],
@@ -50,66 +105,71 @@ function Grafica() {
 
   useEffect(() => {
     if (activeTab !== "select" && chartRef.current) {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
+        if (chartInstance.current) {
+            chartInstance.current.destroy();
+        }
 
-      const ctx = chartRef.current.getContext("2d");
-      chartInstance.current = new Chart(ctx, {
-        type: activeTab,
-        data: activeTab === "bar" ? barChartData : generalChartData,
+        const ctx = chartRef.current.getContext("2d");
+        chartInstance.current = new Chart(ctx, {
+            type: activeTab === "bar" ? "bar" : "doughnut",
+            data: activeTab === "bar" ? barChartData : generalChartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
+        });
+    }
+
+    return () => {
+        if (chartInstance.current) {
+            chartInstance.current.destroy();
+        }
+    };
+}, [activeTab, barChartData]); 
+  
+
+useEffect(() => {
+  selectedCharts.forEach((goalId, index) => {
+    const goal = goalData.find(g => g.id === goalId);
+    if (!goal) return;
+
+    const canvas = document.getElementById(`chart-${index}`);
+    if (canvas) {
+      if (doughnutCharts.current[index]) {
+        doughnutCharts.current[index].destroy();
+      }
+      const ctx = canvas.getContext("2d");
+      doughnutCharts.current[index] = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Completados", "Pendientes"],
+          datasets: [
+            {
+              label: goal.title,
+              data: [goal.completed, goal.notCompleted],
+              backgroundColor: ["rgba(54, 162, 235, 0.2)", "rgba(255, 99, 132, 0.2)"],
+              borderColor: ["rgb(54, 162, 235)", "rgb(255, 99, 132)"],
+              borderWidth: 1,
+            },
+          ],
+        },
         options: {
           responsive: true,
           maintainAspectRatio: false,
         },
       });
     }
+  });
 
-    return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
-    };
-  }, [activeTab]);
-
-  useEffect(() => {
-    selectedCharts.forEach((chart, index) => {
-      const canvas = document.getElementById(`chart-${index}`);
-      if (canvas) {
-        if (doughnutCharts.current[index]) {
-          doughnutCharts.current[index].destroy();
-        }
-        const ctx = canvas.getContext("2d");
-        doughnutCharts.current[index] = new Chart(ctx, {
-          type: "doughnut",
-          data: {
-            labels: ["Completados", "Pendientes"],
-            datasets: [
-              {
-                label: chart,
-                data: doughnutDataSets[chart],
-                backgroundColor: ["rgba(54, 162, 235, 0.2)", "rgba(255, 99, 132, 0.2)"],
-                borderColor: ["rgb(54, 162, 235)", "rgb(255, 99, 132)"],
-                borderWidth: 1,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-          },
-        });
+  return () => {
+    selectedCharts.forEach((_, index) => {
+      if (doughnutCharts.current[index]) {
+        doughnutCharts.current[index].destroy();
       }
     });
+  };
+}, [selectedCharts, goalData]);
 
-    return () => {
-      selectedCharts.forEach((_, index) => {
-        if (doughnutCharts.current[index]) {
-          doughnutCharts.current[index].destroy();
-        }
-      });
-    };
-  }, [selectedCharts]);
 
   useEffect(() => {
   if (activeTab === "select" && selectedCharts.length > 0) {
@@ -133,34 +193,39 @@ function Grafica() {
       <div className="chart-tabs" style={{ marginBottom: "20px" }}>
         <button onClick={() => setActiveTab("bar")} className={activeTab === "bar" ? "active" : ""}>Objetivos por mes</button>
         <button onClick={() => setActiveTab("doughnut")} className={activeTab === "doughnut" ? "active" : ""}>Objetivos generales</button>
-        <button onClick={() => setActiveTab("select")} className={activeTab === "select" ? "active" : ""}>Seleccionar Gráficas</button>
+        <button onClick={() => setActiveTab("select")} className={activeTab === "select" ? "active" : ""}>Objetivos por meta</button>
       </div>
 
       {activeTab === "select" ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div>
-            {additionalCharts.map((chart) => (
-              <label key={chart} style={{ marginRight: "10px" }}>
+            {goalData.map((goal) => (
+              <label key={goal.id} style={{ marginRight: "50px", fontWeight: "bold" }}>
                 <input
                   type="checkbox"
-                  checked={selectedCharts.includes(chart)}
-                  onChange={() => toggleChart(chart)}
-                  disabled={!selectedCharts.includes(chart) && selectedCharts.length >= 4}
+                  checked={selectedCharts.includes(goal.id)}
+                  onChange={() => toggleChart(goal.id)}
+                  disabled={!selectedCharts.includes(goal.id) && selectedCharts.length >= 4}
                 />
-                {"  " + chart}
+                {"  " + goal.title}
               </label>
             ))}
           </div>
+
           {selectedCharts.length > 0 && (
-            <div className="chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px", marginTop: "20px" }}>
-              {selectedCharts.map((chart, index) => (
-                <div key={index} style={{ width: "300px", height: "300px", textAlign: "center" }}>
-                  <p><strong>{chart}</strong></p>
-                  <canvas id={`chart-${index}`} />
-                </div>
-              ))}
+            <div className="chart-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px", marginBottom: "60px" }}>
+              {selectedCharts.map((goalId, index) => {
+                const goal = goalData.find(g => g.id === goalId);
+                return (
+                  <div key={index} style={{ width: "300px", height: "250px", textAlign: "center", marginTop: "30px" }}>
+                    <p style={{ fontSize: "18px", fontWeight: "bold" }}>{goal.title}</p>
+                    <canvas id={`chart-${index}`} />
+                  </div>
+                );
+              })}
             </div>
           )}
+
         </div>
       ) : (
         <div className="chart-space" style={{ width: "50%", height: "400px" }}>

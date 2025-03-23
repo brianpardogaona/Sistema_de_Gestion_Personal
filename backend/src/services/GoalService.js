@@ -84,4 +84,41 @@ export class GoalService {
       return error;
     }
   }
+
+  async getGoalsWithCompletionData(userId) {
+    const { Goal, Objective } = await getModels();
+  
+    try {
+      const goals = await Goal.findAll({
+        where: { userId },
+        include: [
+          {
+            model: Objective,
+            as: "goalObjectives",
+            required: true,
+          },
+        ],
+        order: [['title', 'ASC']],
+      });
+  
+      const goalCompletionData = goals.map((goal) => {
+        const completed = goal.goalObjectives.filter(obj => obj.state === "completed").length;
+        const notCompleted = goal.goalObjectives.filter(obj => obj.state !== "completed").length;
+  
+        return {
+          id: goal.id,
+          title: goal.title,
+          completed,
+          notCompleted,
+        };
+      });
+  
+      return goalCompletionData;
+    } catch (error) {
+      console.error("Error obteniendo datos de completion:", error);
+      return error;
+    }
+  }
+  
+  
 }

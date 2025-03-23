@@ -77,4 +77,16 @@ router.get("/user", authenticateToken, async (req, res) => {
   }
 });
 
+// Goals and objective stats
+router.get("/user/goals-completion", authenticateToken, async (req, res) => {
+  try {
+    const goalService = new GoalService();
+    const goalData = await goalService.getGoalsWithCompletionData(req.user.id);
+    
+    res.status(200).json(goalData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

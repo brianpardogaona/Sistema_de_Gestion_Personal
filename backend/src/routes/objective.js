@@ -18,6 +18,24 @@ router.post("/create", authenticateToken, async (req, res) => {
   }
 });
 
+// Get completed objectives per month
+router.get("/completed-per-month", authenticateToken, async (req, res) => {
+  try {
+    console.log("llego");
+    const objectiveService = new ObjectiveService();
+    const result = await objectiveService.getCompletedObjectivesByMonth();
+
+    if (result instanceof Error) {
+      res.status(500).json({ error: result.message });
+    } else {
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+
 // Delete objective
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
@@ -104,5 +122,7 @@ router.get("/user/state/:state", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
+
 
 export default router;
