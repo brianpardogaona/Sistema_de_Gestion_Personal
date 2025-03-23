@@ -82,8 +82,22 @@ router.get("/user/goals-completion", authenticateToken, async (req, res) => {
   try {
     const goalService = new GoalService();
     const goalData = await goalService.getGoalsWithCompletionData(req.user.id);
-    
+
     res.status(200).json(goalData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get user goals with sorting
+router.get("/user/sorted-goals", authenticateToken, async (req, res) => {
+  try {
+    const { sortBy = "title", order = "ASC" } = req.query;
+
+    const goalService = new GoalService();
+    const goals = await goalService.getSortedGoals(req.user.id, sortBy, order);
+
+    res.status(200).json(goals);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

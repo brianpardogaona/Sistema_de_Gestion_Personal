@@ -35,45 +35,46 @@ function formatearFecha(fechaStr) {
 function ListaMetas() {
   const [metas, setMetas] = useState([]);
   const [desplegadas, setDesplegadas] = useState({});
-  const [filtro, setFiltro] = useState("fecha");
+  const [filtro, setFiltro] = useState("title");
   const [ordenAscendente, setOrdenAscendente] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
 
-  const getTokenFromCookies = async () => {
-    const cookies = document.cookie.split("; ");
-    const tokenCookie = cookies.find((row) => row.startsWith("access-token="));
-    return tokenCookie ? tokenCookie.split("=")[1] : null;
-  };
-
-  useEffect(() => {
-    const fetchMetas = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/api/goal/user", {
+  const fetchMetas = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/goal/user/sorted-goals?sortBy=${filtro}&order=${
+          ordenAscendente ? "ASC" : "DESC"
+        }`,
+        {
           method: "GET",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Error al obtener las metas: ${errorText}`);
         }
+      );
 
-        const data = await response.json();
-        setMetas(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error cargando las metas:", error);
-        setMetas([]);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al obtener las metas: ${errorText}`);
       }
-    };
 
+      const data = await response.json();
+      setMetas(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error cargando las metas:", error);
+      setMetas([]);
+    }
+  };
+
+  useEffect(() => {
     fetchMetas();
-  }, []);
+  }, [filtro, ordenAscendente]);
 
-  const toggleOrden = () => setOrdenAscendente(!ordenAscendente);
+  const toggleOrden = () => {
+    setOrdenAscendente((prev) => !prev);
+  };
 
   const handleFiltroChange = (e) => {
     setFiltro(e.target.value);
@@ -142,8 +143,8 @@ function ListaMetas() {
         />
         <div className="filtro">
           <select value={filtro} onChange={handleFiltroChange}>
-            <option value="fecha">Ordenar por Fecha</option>
-            <option value="nombre">Ordenar por Nombre</option>
+            <option value="createdAt">Ordenar por Fecha</option>
+            <option value="title">Ordenar por Nombre</option>
           </select>
           <button className="orden-btn" onClick={toggleOrden}>
             {ordenAscendente ? "▲" : "▼"}
@@ -174,7 +175,7 @@ function ListaMetas() {
               >
                 ℹ️
               </button>
-              {meta.goalObjectives.length > 0 && (
+              {meta.goalObjectives?.length > 0 && (
                 <button
                   className="desplegar-btn"
                   onClick={() =>

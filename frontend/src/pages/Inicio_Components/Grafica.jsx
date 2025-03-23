@@ -91,7 +91,7 @@ function Grafica() {
   }, []);
 
   const generalChartData = {
-    labels: ["Objetivos sin completar", "Objetivos completados"],
+    labels: ["OBJETIVOS PENDIENTES", "OBJETIVOS COMPLETADOS"],
     datasets: [
       {
         label: "Objetivos generales",
@@ -127,18 +127,6 @@ function Grafica() {
 
     fetchGoals();
   }, []);
-
-  const doughnutDataSets = {
-    Ventas: [30, 70],
-    Clientes: [50, 50],
-    Ingresos: [80, 20],
-    Gastos: [40, 60],
-    Beneficios: [60, 40],
-    Pérdidas: [45, 55],
-    Costos: [70, 30],
-  };
-
-  const additionalCharts = Object.keys(doughnutDataSets);
 
   useEffect(() => {
     if (activeTab !== "select" && chartRef.current) {
@@ -178,7 +166,7 @@ function Grafica() {
         doughnutCharts.current[index] = new Chart(ctx, {
           type: "doughnut",
           data: {
-            labels: ["Completados", "Pendientes"],
+            labels: ["COMPLETADOS", "PENDIENTES"],
             datasets: [
               {
                 label: goal.title,

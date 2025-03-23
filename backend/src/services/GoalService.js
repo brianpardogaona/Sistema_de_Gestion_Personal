@@ -87,7 +87,7 @@ export class GoalService {
 
   async getGoalsWithCompletionData(userId) {
     const { Goal, Objective } = await getModels();
-  
+
     try {
       const goals = await Goal.findAll({
         where: { userId },
@@ -95,16 +95,19 @@ export class GoalService {
           {
             model: Objective,
             as: "goalObjectives",
-            required: true,
+            required: false,
           },
         ],
-        order: [['title', 'ASC']],
       });
-  
-      const goalCompletionData = goals.map((goal) => {
-        const completed = goal.goalObjectives.filter(obj => obj.state === "completed").length;
-        const notCompleted = goal.goalObjectives.filter(obj => obj.state !== "completed").length;
-  
+
+      return goals.map((goal) => {
+        const completed = goal.goalObjectives.filter(
+          (obj) => obj.state === "completed"
+        ).length;
+        const notCompleted = goal.goalObjectives.filter(
+          (obj) => obj.state !== "completed"
+        ).length;
+
         return {
           id: goal.id,
           title: goal.title,
@@ -112,13 +115,42 @@ export class GoalService {
           notCompleted,
         };
       });
-  
-      return goalCompletionData;
     } catch (error) {
-      console.error("Error obteniendo datos de completion:", error);
-      return error;
+      console.error("Error obteniendo datos de metas:", error);
+      return [];
     }
   }
-  
-  
+
+  async getSortedGoals(userId, sortBy = "title", order = "ASC") {
+    const { Goal, Objective } = await getModels();
+
+    try {
+      const goals = await Goal.findAll({
+        where: { userId },
+        include: [
+          {
+            model: Objective,
+            as: "goalObjectives",
+            required: false,
+          },
+        ],
+        order: [[sortBy, order.toUpperCase()]],
+      });
+
+      return goals.map((goal) => ({
+        id: goal.id,
+        title: goal.title,
+        createdAt: goal.createdAt,
+        goalObjectives: goal.goalObjectives.map((obj) => ({
+          id: obj.id,
+          title: obj.title,
+          state: obj.state,
+          createdAt: obj.createdAt,
+        })),
+      }));
+    } catch (error) {
+      console.error("Error obteniendo metas ordenadas:", error);
+      return [];
+    }
+  }
 }
