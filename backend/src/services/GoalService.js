@@ -100,21 +100,24 @@ export class GoalService {
         ],
       });
 
-      return goals.map((goal) => {
-        const completed = goal.goalObjectives.filter(
-          (obj) => obj.state === "completed"
-        ).length;
-        const notCompleted = goal.goalObjectives.filter(
-          (obj) => obj.state !== "completed"
-        ).length;
+      return goals
+        .filter((goal) => goal.goalObjectives.length > 0)
+        .map((goal) => {
+          const completed = goal.goalObjectives.filter(
+            (obj) => obj.state === "completed"
+          ).length;
+          const notCompleted = goal.goalObjectives.filter(
+            (obj) => obj.state !== "completed"
+          ).length;
 
-        return {
-          id: goal.id,
-          title: goal.title,
-          completed,
-          notCompleted,
-        };
-      });
+          return {
+            id: goal.id,
+            title: goal.title,
+            completed,
+            notCompleted,
+          };
+        })
+        .sort((a, b) => a.title.localeCompare(b.title));
     } catch (error) {
       console.error("Error obteniendo datos de metas:", error);
       return [];
@@ -141,12 +144,15 @@ export class GoalService {
         id: goal.id,
         title: goal.title,
         createdAt: goal.createdAt,
-        goalObjectives: goal.goalObjectives.map((obj) => ({
-          id: obj.id,
-          title: obj.title,
-          state: obj.state,
-          createdAt: obj.createdAt,
-        })),
+        goalObjectives: goal.goalObjectives
+          .map((obj) => ({
+            id: obj.id,
+            title: obj.title,
+            state: obj.state,
+            createdAt: obj.createdAt,
+            goalListOrder: obj.goalListOrder,
+          }))
+          .sort((a, b) => a.goalListOrder - b.goalListOrder),
       }));
     } catch (error) {
       console.error("Error obteniendo metas ordenadas:", error);

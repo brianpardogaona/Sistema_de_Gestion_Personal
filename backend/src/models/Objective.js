@@ -43,14 +43,22 @@ export default (sequelize) => {
         allowNull: false,
         defaultValue: "pending",
       },
+      goalListOrder: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      agendaListOrder: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW, 
+        defaultValue: DataTypes.NOW,
       },
       completedAt: {
         type: DataTypes.DATE,
-        allowNull: true, 
+        allowNull: true,
       },
     },
     {
@@ -58,8 +66,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-
 
   return Objective;
 };

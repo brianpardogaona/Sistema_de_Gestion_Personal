@@ -24,16 +24,16 @@ export default async function createTables(sequelize) {
     if (process.env.SYNC_DB === "force") {
       await sequelize.sync({ force: true });
       console.log("✅ DB Restarted");
-      
     } else if (process.env.SYNC_DB === "alter") {
       await sequelize.sync({ alter: true });
       console.log("✅ All tables were successfully synchronized.");
     }
 
-    if(process.env.INIT_USERS === "true") await initUsers(User);
-    
-    if(process.env.INIT_GOALS_AND_OBJECTIVES === "true") await initGoalsAndObjetives(User, Goal,Objective);
-  
+    if (process.env.INIT_USERS === "true") await initUsers(User);
+
+    if (process.env.INIT_GOALS_AND_OBJECTIVES === "true")
+      await initGoalsAndObjetives(User, Goal, Objective);
+
     return { User, Goal, Objective };
   } catch (error) {
     console.error("❌ Error synchronizing the database:", error);
@@ -42,7 +42,7 @@ export default async function createTables(sequelize) {
 }
 
 async function initUsers(User) {
-    await User.create({
+  await User.create({
     id: uuidv4(),
     username: "brian",
     password: await bcrypt.hash(
@@ -55,8 +55,7 @@ async function initUsers(User) {
   console.log("✅ Default root user created.");
 }
 
-
-async function initGoalsAndObjetives(User, Goal, Objective){
+async function initGoalsAndObjetives(User, Goal, Objective) {
   const [rootUser] = await User.findOrCreate({
     where: { username: "brian" },
     defaults: {
@@ -70,7 +69,7 @@ async function initGoalsAndObjetives(User, Goal, Objective){
       lastName: "Root",
     },
   });
-      // Insert goals
+  // Insert goals
   const goals = await Goal.bulkCreate([
     {
       id: 1,
@@ -125,18 +124,21 @@ async function initGoalsAndObjetives(User, Goal, Objective){
       userId: rootUser.id,
       title: "Objetivo 1.1",
       description: "Descripción del objetivo 1.1",
+      goalListOrder: 1,
     },
     {
       goalId: 1,
       userId: rootUser.id,
       title: "Objetivo 1.2",
       description: "Descripción del objetivo 1.2",
+      goalListOrder: 2,
     },
     {
       goalId: 1,
       userId: rootUser.id,
       title: "Objetivo 1.3",
       description: "Descripción del objetivo 1.3",
+      goalListOrder: 3,
     },
 
     {
@@ -144,12 +146,14 @@ async function initGoalsAndObjetives(User, Goal, Objective){
       userId: rootUser.id,
       title: "Objetivo 2.1",
       description: "Descripción del objetivo 2.1",
+      goalListOrder: 1,
     },
     {
       goalId: 2,
       userId: rootUser.id,
       title: "Objetivo 2.2",
       description: "Descripción del objetivo 2.2",
+      goalListOrder: 2,
     },
 
     {
@@ -157,6 +161,7 @@ async function initGoalsAndObjetives(User, Goal, Objective){
       userId: rootUser.id,
       title: "Objetivo 3.1",
       description: "Descripción del objetivo 3.1",
+      goalListOrder: 1,
     },
   ]);
 

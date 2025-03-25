@@ -83,7 +83,7 @@ function ListaMetas() {
 
   const handleBusquedaChange = (e) => setBusqueda(e.target.value.toLowerCase());
 
-  const handleEstadoCambioAPI = async (metaId, objId, nuevoEstado) => {
+  const handleEstadoCambioAPI = async (objId, nuevoEstado) => {
     try {
       const response = await fetch(`${API_URL}objective/${objId}/toggle`, {
         method: "PATCH",
@@ -117,7 +117,7 @@ function ListaMetas() {
           (meta) => meta.title && meta.title.toLowerCase().includes(busqueda)
         )
         .sort((a, b) => {
-          if (filtro === "nombre") {
+          if (filtro === "title") {
             return ordenAscendente
               ? a.title.localeCompare(b.title)
               : b.title.localeCompare(a.title);
@@ -192,29 +192,26 @@ function ListaMetas() {
 
             {desplegadas[meta.id] && (
               <ul className="objetivos">
-                {meta.goalObjectives
-                  .slice()
-                  .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                  .map((obj) => (
-                    <li key={obj.id}>
-                      {obj.title}{" "}
-                      <span className="fecha">
-                        {formatearFecha(obj.createdAt)}
-                      </span>
-                      <select
-                        value={obj.state}
-                        onChange={(e) =>
-                          handleEstadoCambioAPI(meta.id, obj.id, e.target.value)
-                        }
-                      >
-                        {Object.entries(estadosObjetivo).map(([key, value]) => (
-                          <option key={key} value={key}>
-                            {value}
-                          </option>
-                        ))}
-                      </select>
-                    </li>
-                  ))}
+                {meta.goalObjectives.map((obj) => (
+                  <li key={obj.id}>
+                    {obj.title}{" "}
+                    <span className="fecha">
+                      {formatearFecha(obj.createdAt)}
+                    </span>
+                    <select
+                      value={obj.state}
+                      onChange={(e) =>
+                        handleEstadoCambioAPI(obj.id, e.target.value)
+                      }
+                    >
+                      {Object.entries(estadosObjetivo).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))}
+                    </select>
+                  </li>
+                ))}
               </ul>
             )}
           </div>
