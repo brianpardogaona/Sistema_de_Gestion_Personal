@@ -106,6 +106,7 @@ function ListaMetas() {
           ),
         }))
       );
+      await fetchMetas();
     } catch (error) {
       console.error("Error al cambiar estado del objetivo:", error.message);
     }
@@ -196,9 +197,6 @@ function ListaMetas() {
                   <li key={obj.id} className="objetivo-item">
                     <span className={`estado-circulo ${obj.state}`}></span>
                     <span className="objetivo-titulo">{obj.title}</span>
-                    <span className="fecha">
-                      {formatearFecha(obj.createdAt)}
-                    </span>
                     <select
                       value={obj.state}
                       onChange={(e) =>
@@ -211,6 +209,11 @@ function ListaMetas() {
                         </option>
                       ))}
                     </select>
+                    {obj.completedAt && (
+                      <span className="fecha">
+                        {formatearFecha(obj.completedAt)}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

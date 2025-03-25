@@ -150,6 +150,7 @@ export class GoalService {
             title: obj.title,
             state: obj.state,
             createdAt: obj.createdAt,
+            completedAt: obj.completedAt,
             goalListOrder: obj.goalListOrder,
           }))
           .sort((a, b) => a.goalListOrder - b.goalListOrder),
