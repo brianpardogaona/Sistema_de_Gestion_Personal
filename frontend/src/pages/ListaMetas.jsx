@@ -193,8 +193,9 @@ function ListaMetas() {
             {desplegadas[meta.id] && (
               <ul className="objetivos">
                 {meta.goalObjectives.map((obj) => (
-                  <li key={obj.id}>
-                    {obj.title}{" "}
+                  <li key={obj.id} className="objetivo-item">
+                    <span className={`estado-circulo ${obj.state}`}></span>
+                    <span className="objetivo-titulo">{obj.title}</span>
                     <span className="fecha">
                       {formatearFecha(obj.createdAt)}
                     </span>
