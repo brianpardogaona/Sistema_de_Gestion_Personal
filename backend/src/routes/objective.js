@@ -21,9 +21,8 @@ router.post("/create", authenticateToken, async (req, res) => {
 // Get completed objectives per month
 router.get("/completed-per-month", authenticateToken, async (req, res) => {
   try {
-    console.log("llego");
     const objectiveService = new ObjectiveService();
-    const result = await objectiveService.getCompletedObjectivesByMonth();
+    const result = await objectiveService.getCompletedObjectivesByMonth(req.user.id);
 
     if (result instanceof Error) {
       res.status(500).json({ error: result.message });
@@ -34,6 +33,7 @@ router.get("/completed-per-month", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
 
 // Delete objective
 router.delete("/:id", authenticateToken, async (req, res) => {

@@ -132,25 +132,48 @@ function Grafica() {
     if (activeTab !== "select" && chartRef.current) {
       if (chartInstance.current) {
         chartInstance.current.destroy();
+        chartInstance.current = null;
       }
-
+  
       const ctx = chartRef.current.getContext("2d");
+  
+      const maxValue =
+        barChartData.datasets.length > 0
+          ? Math.max(...barChartData.datasets[0].data, 0)
+          : 0;
+      const yMax = maxValue < 5 ? 5 : maxValue + 1;
+  
       chartInstance.current = new Chart(ctx, {
         type: activeTab === "bar" ? "bar" : "doughnut",
         data: activeTab === "bar" ? barChartData : generalChartData,
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          scales: activeTab === "bar"
+            ? {
+                y: {
+                  beginAtZero: true,
+                  max: yMax,
+                  ticks: {
+                    stepSize: 1,
+                    precision: 0,
+                  },
+                },
+              }
+            : {},
         },
       });
     }
-
+  
     return () => {
       if (chartInstance.current) {
         chartInstance.current.destroy();
+        chartInstance.current = null;
       }
     };
-  }, [activeTab, barChartData]);
+  }, [activeTab, barChartData, generalChartData]);
+  
+  
 
   useEffect(() => {
     selectedCharts.forEach((goalId, index) => {

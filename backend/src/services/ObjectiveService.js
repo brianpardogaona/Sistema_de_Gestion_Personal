@@ -111,15 +111,19 @@ export class ObjectiveService {
     }
   }
 
-  async getCompletedObjectivesByMonth() {
+
+  
+  
+
+  async getCompletedObjectivesByMonth(userId) {
     const { Objective } = getModels();
     try {
       const now = new Date();
-      const sevenMonthsAgo = new Date();
-      sevenMonthsAgo.setMonth(now.getMonth() - 6);
-
+      const sevenMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+  
       const objectives = await Objective.findAll({
         where: {
+          userId,
           completedAt: {
             [Op.ne]: null,
             [Op.gte]: sevenMonthsAgo,
@@ -127,66 +131,29 @@ export class ObjectiveService {
         },
         attributes: ["completedAt"],
       });
-
+  
       const counts = {};
       for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setMonth(now.getMonth() - i);
-        const monthYear = `${date.getFullYear()}-${date.getMonth() + 1}`;
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
         counts[monthYear] = 0;
       }
-
+  
       objectives.forEach((obj) => {
         const date = new Date(obj.completedAt);
-        const monthYear = `${date.getFullYear()}-${date.getMonth() + 1}`;
+        const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
         if (counts[monthYear] !== undefined) {
           counts[monthYear]++;
         }
       });
-
-      console.log(counts);
-
+  
       return counts;
     } catch (error) {
+      console.error("Error obteniendo objetivos completados:", error);
       return error;
     }
   }
-
-  async getGoalsWithObjectiveStats() {
-    try {
-      const { Goal, Objective } = await getModels();
-      const goals = await Goal.findAll({
-        where: { userId: this.body.id },
-        include: [
-          {
-            model: Objective,
-            as: "goalObjectives",
-            required: false,
-          },
-        ],
-      });
-
-      const result = goals.map((goal) => {
-        const totalObjectives = goal.goalObjectives.length;
-        const completedObjectives = goal.goalObjectives.filter(
-          (obj) => obj.state === "completed"
-        ).length;
-        const pendingObjectives = totalObjectives - completedObjectives;
-
-        return {
-          id: goal.id,
-          title: goal.title,
-          completed: completedObjectives,
-          pending: pendingObjectives,
-        };
-      });
-
-      return result;
-    } catch (error) {
-      console.error("Error fetching goal statistics: ", error);
-      return error;
-    }
-  }
+  
 
   async getGeneralObjectiveCompletion(userId) {
     const { Objective } = getModels();
