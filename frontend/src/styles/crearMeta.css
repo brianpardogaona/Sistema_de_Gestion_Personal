@@ -1,0 +1,111 @@
+.crear-meta-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.crear-meta-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.crear-meta-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+  color: #444;
+}
+
+.crear-meta-container input,
+.crear-meta-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  resize: none;
+}
+
+.crear-meta-container textarea {
+  height: 80px;
+}
+
+.crear-meta-container h3 {
+  margin-top: 20px;
+  color: #444;
+}
+
+.crear-meta-container p {
+  font-size: 14px;
+  color: #666;
+}
+
+.objetivo-item {
+  background: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-objetivo-btn {
+  display: block;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  margin: 15px auto;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease-in-out;
+}
+
+.add-objetivo-btn:hover {
+  background: #0056b3;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.save-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.cancel-btn {
+  background: #dc3545;
+  color: white;
+  margin-right: 10px;
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+  margin-left: 10px;
+}
+
+.cancel-btn:hover,
+.save-btn:hover {
+  opacity: 0.8;
+}

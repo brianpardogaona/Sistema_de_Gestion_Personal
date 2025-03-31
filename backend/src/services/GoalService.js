@@ -160,4 +160,57 @@ export class GoalService {
       return [];
     }
   }
+
+  async createGoal() {
+    const { Goal, Objective } = await getModels();
+
+    try {
+      const newGoal = await Goal.create({
+        title: this.body.title,
+        description: this.body.description,
+        userId: this.body.userId,
+        state: "pending",
+      });
+
+      if (!this.body.objectives || this.body.objectives.length === 0) {
+        await Objective.create({
+          title: newGoal.title,
+          description: newGoal.description,
+          goalId: newGoal.id,
+          userId: newGoal.userId,
+          goalListOrder: 1,
+          state: "pending",
+        });
+      } else {
+        const objetivos = this.body.objectives
+          .filter((obj) => obj.title?.trim())
+          .map((obj, index) => ({
+            title: obj.title,
+            description: obj.description || "",
+            goalId: newGoal.id,
+            userId: newGoal.userId,
+            goalListOrder: index + 1,
+            state: "pending",
+          }));
+
+        if (objetivos.length > 0) {
+          await Objective.bulkCreate(objetivos);
+        } else {
+          await Objective.create({
+            title: newGoal.title,
+            description: newGoal.description,
+            goalId: newGoal.id,
+            userId: newGoal.userId,
+            goalListOrder: 1,
+            state: "pending",
+          });
+        }
+      }
+
+      return newGoal;
+    } catch (error) {
+      console.error("Error al crear la meta:", error);
+      throw new Error("No se pudo crear la meta. Inténtalo de nuevo.");
+    }
+  }
 }

@@ -5,6 +5,7 @@ import MisMetas from "./pages/MisMetas";
 import MiCuenta from "./pages/MiCuenta";
 import Agenda from "./pages/Agenda";
 import Register from "./pages/Register";
+import CrearMeta from "./pages/CrearMeta";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
       <Route path="/mi-cuenta" element={<MiCuenta />} />
       <Route path="/agenda" element={<Agenda />} />
       <Route path="/register" element={<Register />} />
-
+      <Route path="/crear-meta" element={<CrearMeta />} />
     </Routes>
   );
 }

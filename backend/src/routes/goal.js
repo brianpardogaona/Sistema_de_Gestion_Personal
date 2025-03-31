@@ -103,4 +103,24 @@ router.get("/user/sorted-goals", authenticateToken, async (req, res) => {
   }
 });
 
+router.post(
+  "/objective/create-multiple",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { Objective } = await getModels();
+      const objetivos = req.body.map((obj) => ({
+        ...obj,
+        userId: req.user.id,
+        state: "pending",
+      }));
+
+      await Objective.bulkCreate(objetivos);
+      res.status(201).json({ message: "Objetivos creados correctamente" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
 export default router;
