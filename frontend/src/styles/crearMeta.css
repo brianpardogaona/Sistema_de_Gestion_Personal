@@ -46,6 +46,8 @@
 }
 
 .objetivo-item {
+  display: flex;
+  align-items: center;
   background: #fff;
   padding: 10px;
   border-radius: 5px;
@@ -53,26 +55,24 @@
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.objetivo-item input,
+.objetivo-item textarea {
+  flex: 1;
+  margin-right: 10px;
+}
+
 .add-objetivo-btn {
   display: block;
-  background: #007bff;
-  color: white;
+  background: none;
   border: none;
   padding: 10px;
-  border-radius: 50%;
-  font-size: 24px;
   cursor: pointer;
   margin: 15px auto;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s ease-in-out;
+  transition: transform 0.2s ease-in-out;
 }
 
 .add-objetivo-btn:hover {
-  background: #0056b3;
+  transform: scale(1.1);
 }
 
 .btn-group {
@@ -108,4 +108,32 @@
 .cancel-btn:hover,
 .save-btn:hover {
   opacity: 0.8;
+}
+
+.remove-objetivo-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.remove-objetivo-btn:hover {
+  transform: scale(1.1);
+}
+
+.remove-objetivo-btn img {
+  width: 100%;
+  height: auto;
+  max-width: 30px;
+}
+.add-objetivo-btn img {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
 }

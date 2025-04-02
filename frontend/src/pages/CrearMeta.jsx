@@ -34,6 +34,16 @@ function CrearMeta() {
     }
   };
 
+  const handleEliminarObjetivo = (index) => {
+    const nuevosObjetivos = objetivos.filter((_, i) => i !== index);
+
+    if (nuevosObjetivos.length === 0) {
+      nuevosObjetivos.push({ title: "", description: "", order: 1 });
+    }
+
+    setObjetivos(nuevosObjetivos);
+  };
+
   const handleObjetivoChange = (index, field, value) => {
     const nuevosObjetivos = [...objetivos];
     nuevosObjetivos[index][field] = value;
@@ -132,17 +142,22 @@ function CrearMeta() {
               handleObjetivoChange(index, "description", e.target.value)
             }
           />
+
+          <button
+            className="remove-objetivo-btn"
+            onClick={() => handleEliminarObjetivo(index)}
+          >
+            {" "}
+            <img
+              src="../../public/images/boton-menos.png"
+              alt="Eliminar"
+            />{" "}
+          </button>
         </div>
       ))}
 
-      <button
-        className="add-objetivo-btn"
-        onClick={handleAgregarObjetivo}
-        disabled={
-          objetivos.length > 0 && !objetivos[objetivos.length - 1].title
-        }
-      >
-        +
+      <button className="add-objetivo-btn" onClick={handleAgregarObjetivo}>
+        <img src="../../public/images/mas.png" alt="Agregar" />
       </button>
 
       <div className="btn-group">
