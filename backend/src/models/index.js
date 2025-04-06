@@ -72,43 +72,36 @@ async function initGoalsAndObjetives(User, Goal, Objective) {
   // Insert goals
   const goals = await Goal.bulkCreate([
     {
-      id: 1,
       userId: rootUser.id,
       title: "Meta 1",
       description: "Descripción de la meta 1",
     },
     {
-      id: 2,
       userId: rootUser.id,
       title: "Meta 2",
       description: "Descripción de la meta 2",
     },
     {
-      id: 3,
       userId: rootUser.id,
       title: "Meta 3",
       description: "Descripción de la meta 3",
     },
     {
-      id: 4,
       userId: rootUser.id,
       title: "Meta 4",
       description: "Descripción de la meta 4",
     },
     {
-      id: 5,
       userId: rootUser.id,
       title: "Meta 5",
       description: "Descripción de la meta 5",
     },
     {
-      id: 6,
       userId: rootUser.id,
       title: "Meta 6",
       description: "Descripción de la meta 6",
     },
     {
-      id: 7,
       userId: rootUser.id,
       title: "Meta 7",
       description: "Descripción de la meta 7",
