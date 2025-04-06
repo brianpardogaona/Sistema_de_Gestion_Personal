@@ -105,7 +105,7 @@ function EditarMeta() {
       return;
     }
 
-    const objetivosFiltrados = objetivos
+    let objetivosFiltrados = objetivos
       .filter((obj) => obj.title.trim() || obj.description.trim())
       .map((obj, index) => ({
         id: obj.id,
@@ -113,6 +113,16 @@ function EditarMeta() {
         description: obj.description.trim() || null,
         order: index + 1,
       }));
+
+    if (objetivosFiltrados.length === 0) {
+      objetivosFiltrados = [
+        {
+          title: titulo.trim(),
+          description: descripcion.trim() || null,
+          order: 1,
+        },
+      ];
+    }
 
     const metaData = {
       title: titulo.trim(),
@@ -157,6 +167,10 @@ function EditarMeta() {
       <textarea value={descripcion} onChange={handleDescripcionChange} />
 
       <h3>Objetivos</h3>
+      <p>
+        Si no añades objetivos, se creará uno con el mismo título y descripción
+        de la meta.
+      </p>
       {objetivos.map((obj, index) => (
         <div key={index} className="objetivo-item">
           <input

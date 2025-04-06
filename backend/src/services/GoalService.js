@@ -258,6 +258,16 @@ export class GoalService {
     const { id, title, description, objectives, userId } = this.body;
     const { Goal, Objective } = await getModels();
 
+    const objetivosFinales =
+      objectives.length > 0
+        ? objectives
+        : [
+            {
+              title,
+              description,
+            },
+          ];
+
     try {
       const goal = await Goal.findByPk(id);
       if (!goal) {
@@ -270,7 +280,7 @@ export class GoalService {
         where: { goalId: id },
       });
 
-      const nuevosIds = objectives.filter((o) => o.id).map((o) => o.id);
+      const nuevosIds = objetivosFinales.filter((o) => o.id).map((o) => o.id);
 
       const idsAEliminar = objetivosActuales
         .filter((obj) => !nuevosIds.includes(obj.id))
@@ -280,8 +290,8 @@ export class GoalService {
         await Objective.destroy({ where: { id: idsAEliminar } });
       }
 
-      for (let i = 0; i < objectives.length; i++) {
-        const { id: objId, title, description } = objectives[i];
+      for (let i = 0; i < objetivosFinales.length; i++) {
+        const { id: objId, title, description } = objetivosFinales[i];
 
         if (objId) {
           const objective = await Objective.findByPk(objId);
