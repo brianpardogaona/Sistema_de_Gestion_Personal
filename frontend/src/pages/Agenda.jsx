@@ -47,7 +47,7 @@ function Agenda() {
 
         if (!response.ok) throw new Error("Error al obtener los objetivos");
         const data = await response.json();
-        setObjetivos(data);
+        setObjetivos(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error cargando los objetivos:", error);
         setObjetivos([]);

@@ -213,4 +213,100 @@ export class GoalService {
       throw new Error("No se pudo crear la meta. Inténtalo de nuevo.");
     }
   }
+
+  async getGoalsWithObjectives(userId) {
+    const { Goal, Objective } = await getModels();
+
+    try {
+      const goals = await Goal.findAll({
+        where: { userId },
+        include: [
+          {
+            model: Objective,
+            as: "goalObjectives",
+            required: false,
+            attributes: [
+              "id",
+              "title",
+              "description",
+              "state",
+              "goalListOrder",
+            ],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+
+      return goals.map((goal) => ({
+        id: goal.id,
+        title: goal.title,
+        description: goal.description,
+        state: goal.state,
+        createdAt: goal.createdAt,
+        completedAt: goal.completedAt,
+        objectives: goal.goalObjectives.sort(
+          (a, b) => a.goalListOrder - b.goalListOrder
+        ),
+      }));
+    } catch (error) {
+      console.error("Error obteniendo metas con objetivos:", error);
+      throw new Error("No se pudieron obtener las metas. Inténtalo de nuevo.");
+    }
+  }
+
+  async modifyGoalWithObjectives() {
+    const { id, title, description, objectives, userId } = this.body;
+    const { Goal, Objective } = await getModels();
+
+    try {
+      const goal = await Goal.findByPk(id);
+      if (!goal) {
+        return new Error("Meta no encontrada");
+      }
+
+      await goal.update({ title, description });
+
+      const objetivosActuales = await Objective.findAll({
+        where: { goalId: id },
+      });
+
+      const nuevosIds = objectives.filter((o) => o.id).map((o) => o.id);
+
+      const idsAEliminar = objetivosActuales
+        .filter((obj) => !nuevosIds.includes(obj.id))
+        .map((obj) => obj.id);
+
+      if (idsAEliminar.length > 0) {
+        await Objective.destroy({ where: { id: idsAEliminar } });
+      }
+
+      for (let i = 0; i < objectives.length; i++) {
+        const { id: objId, title, description } = objectives[i];
+
+        if (objId) {
+          const objective = await Objective.findByPk(objId);
+          if (objective) {
+            await objective.update({
+              title,
+              description,
+              goalListOrder: i + 1,
+            });
+          }
+        } else {
+          await Objective.create({
+            userId,
+            goalId: id,
+            title,
+            description,
+            goalListOrder: i + 1,
+          });
+        }
+      }
+
+      return "Meta y objetivos actualizados correctamente";
+    } catch (error) {
+      console.error("Error al actualizar la meta y los objetivos:", error);
+      return error;
+    }
+  }
 }

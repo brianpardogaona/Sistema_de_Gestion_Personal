@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/lista.css";
-import { Star } from "react-feather";
+import { Star, Edit2 } from "react-feather";
 
 const API_URL = "http://localhost:4000/api/";
 
@@ -171,10 +171,10 @@ function ListaMetas() {
                 <span className="meta-completada">✔️</span>
               )}
               <button
-                className="info-btn"
-                onClick={() => navigate(`/info-meta/${meta.id}`)}
+                className="edit-btn"
+                onClick={() => navigate(`/editar-meta/${meta.id}`)}
               >
-                ℹ️
+                <Edit2 size={18} />
               </button>
               {meta.goalObjectives?.length > 0 && (
                 <button

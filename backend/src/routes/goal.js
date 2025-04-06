@@ -123,4 +123,39 @@ router.post(
   }
 );
 
+// Get all user goals with their objectives
+router.get(
+  "/user/goals-with-objectives",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const goalService = new GoalService();
+      const goalsWithObjectives = await goalService.getGoalsWithObjectives(
+        req.user.id
+      );
+
+      res.status(200).json(goalsWithObjectives);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
+// Modify Goal and Objectives
+router.patch("/:id/update", authenticateToken, async (req, res) => {
+  const goalService = new GoalService({
+    ...req.body,
+    id: req.params.id,
+    userId: req.user.id,
+  });
+
+  const result = await goalService.modifyGoalWithObjectives();
+
+  if (!(result instanceof Error)) {
+    res.json({ message: result });
+  } else {
+    res.status(400).json({ error: result.message });
+  }
+});
+
 export default router;
