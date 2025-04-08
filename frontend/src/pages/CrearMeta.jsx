@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/crearMeta.css";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const API_URL = "http://localhost:4000/api/";
 
 function CrearMeta() {
   const navigate = useNavigate();
+  const nextId = useRef(2);
+  const isDragging = useRef(false);
+
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [objetivos, setObjetivos] = useState([]);
+  const [objetivos, setObjetivos] = useState([
+    { id: "1", title: "", description: "", order: 1 },
+  ]);
   const [cambiosPendientes, setCambiosPendientes] = useState(false);
 
   const handleTituloChange = (e) => {
@@ -22,45 +28,62 @@ function CrearMeta() {
   };
 
   const handleAgregarObjetivo = () => {
-    const objetivosNoVacios = objetivos.filter(
-      (obj) => obj.title.trim() !== "" || obj.description.trim() !== ""
-    );
+    if (isDragging.current) return;
 
-    if (objetivosNoVacios.length === objetivos.length) {
-      setObjetivos([
-        ...objetivosNoVacios,
-        { title: "", description: "", order: objetivosNoVacios.length + 1 },
-      ]);
-    }
+    const hayVacio = objetivos.some(
+      (obj) => !obj.title.trim() && !obj.description.trim()
+    );
+    if (hayVacio) return;
+
+    setObjetivos((prev) => [
+      ...prev,
+      {
+        id: String(nextId.current++),
+        title: "",
+        description: "",
+        order: prev.length + 1,
+      },
+    ]);
+    setCambiosPendientes(true);
   };
 
   const handleEliminarObjetivo = (index) => {
-    const nuevosObjetivos = objetivos.filter((_, i) => i !== index);
+    if (isDragging.current) return;
 
-    if (nuevosObjetivos.length === 0) {
-      nuevosObjetivos.push({ title: "", description: "", order: 1 });
-    }
-
-    setObjetivos(nuevosObjetivos);
+    const nuevos = objetivos.filter((_, i) => i !== index);
+    setObjetivos(limpiarObjetivos(nuevos));
+    setCambiosPendientes(true);
   };
 
   const handleObjetivoChange = (index, field, value) => {
-    const nuevosObjetivos = [...objetivos];
-    nuevosObjetivos[index][field] = value;
+    if (isDragging.current) return;
 
-    const objetivosNoVacios = nuevosObjetivos.filter(
-      (obj) => obj.title.trim() !== "" || obj.description.trim() !== ""
+    const nuevos = [...objetivos];
+    nuevos[index][field] = value;
+
+    setObjetivos(limpiarObjetivos(nuevos));
+    setCambiosPendientes(true);
+  };
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result.map((item, index) => ({
+      ...item,
+      order: index + 1,
+    }));
+  };
+
+  const onDragEnd = (result) => {
+    let reordered = reorder(
+      objetivos,
+      result.source.index,
+      result.destination.index
     );
 
-    if (objetivosNoVacios.length < nuevosObjetivos.length) {
-      objetivosNoVacios.push({
-        title: "",
-        description: "",
-        order: objetivosNoVacios.length + 1,
-      });
-    }
-
-    setObjetivos(objetivosNoVacios);
+    setObjetivos(limpiarObjetivos(reordered));
+    setCambiosPendientes(true);
   };
 
   const handleGuardarMeta = async () => {
@@ -70,7 +93,7 @@ function CrearMeta() {
     }
 
     const objetivosFiltrados = objetivos
-      .filter((obj) => obj.title.trim() !== "" || obj.description.trim() !== "")
+      .filter((obj) => obj.title.trim() || obj.description.trim())
       .map((obj, index) => ({
         title: obj.title.trim(),
         description: obj.description.trim() || null,
@@ -80,7 +103,16 @@ function CrearMeta() {
     const metaData = {
       title: titulo.trim(),
       description: descripcion.trim() || null,
-      objectives: objetivosFiltrados,
+      objectives:
+        objetivosFiltrados.length > 0
+          ? objetivosFiltrados
+          : [
+              {
+                title: titulo.trim(),
+                description: descripcion.trim() || null,
+                order: 1,
+              },
+            ],
     };
 
     try {
@@ -110,6 +142,22 @@ function CrearMeta() {
     navigate("/mis-metas");
   };
 
+  const limpiarObjetivos = (lista) => {
+    const llenos = lista.filter(
+      (obj) => obj.title.trim() || obj.description.trim()
+    );
+
+    return [
+      ...llenos,
+      {
+        id: String(nextId.current++),
+        title: "",
+        description: "",
+        order: llenos.length + 1,
+      },
+    ];
+  };
+
   return (
     <div className="crear-meta-container">
       <h2>Crear Nueva Meta</h2>
@@ -125,36 +173,67 @@ function CrearMeta() {
         de la meta.
       </p>
 
-      {objetivos.map((obj, index) => (
-        <div key={index} className="objetivo-item">
-          <input
-            type="text"
-            placeholder="Título del objetivo"
-            value={obj.title}
-            onChange={(e) =>
-              handleObjetivoChange(index, "title", e.target.value)
-            }
-          />
-          <textarea
-            placeholder="Descripción del objetivo (opcional)"
-            value={obj.description}
-            onChange={(e) =>
-              handleObjetivoChange(index, "description", e.target.value)
-            }
-          />
-
-          <button
-            className="remove-objetivo-btn"
-            onClick={() => handleEliminarObjetivo(index)}
-          >
-            {" "}
-            <img
-              src="../../public/images/boton-menos.png"
-              alt="Eliminar"
-            />{" "}
-          </button>
-        </div>
-      ))}
+      {typeof window !== "undefined" && objetivos.length > 0 && (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="objetivos">
+            {(provided) => (
+              <div
+                className="objetivos-list"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {objetivos.map((obj, index) => (
+                  <Draggable
+                    key={obj.id}
+                    draggableId={obj.id.toString()}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <div
+                        className="objetivo-item"
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <span className="drag-handle">≡</span>
+                        <input
+                          type="text"
+                          placeholder="Título del objetivo"
+                          value={obj.title}
+                          onChange={(e) =>
+                            handleObjetivoChange(index, "title", e.target.value)
+                          }
+                        />
+                        <textarea
+                          placeholder="Descripción del objetivo (opcional)"
+                          value={obj.description}
+                          onChange={(e) =>
+                            handleObjetivoChange(
+                              index,
+                              "description",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <button
+                          className="remove-objetivo-btn"
+                          onClick={() => handleEliminarObjetivo(index)}
+                        >
+                          <img
+                            src="../../public/images/boton-menos.png"
+                            alt="Eliminar"
+                          />
+                        </button>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      )}
 
       <button className="add-objetivo-btn" onClick={handleAgregarObjetivo}>
         <img src="../../public/images/mas.png" alt="Agregar" />
