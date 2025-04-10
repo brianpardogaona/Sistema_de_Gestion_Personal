@@ -254,33 +254,28 @@ export class GoalService {
     }
   }
 
-  async modifyGoalWithObjectives() {
-    const { id, title, description, objectives, userId } = this.body;
+  async modifyGoalWithObjectives(userId, goalId) {
+    console.log("User ID recibido en servicio:", goalId);
+
+    const { title, description, objectives } = this.body;
     const { Goal, Objective } = await getModels();
 
     const objetivosFinales =
-      objectives.length > 0
-        ? objectives
-        : [
-            {
-              title,
-              description,
-            },
-          ];
+      objectives.length > 0 ? objectives : [{ title, description }];
 
     try {
-      const goal = await Goal.findByPk(id);
+      const goal = await Goal.findByPk(goalId);
       if (!goal) {
         return new Error("Meta no encontrada");
       }
 
       await goal.update({ title, description });
 
-      const objetivosActuales = await Objective.findAll({
-        where: { goalId: id },
-      });
+      const objetivosActuales = await Objective.findAll({ where: { goalId } });
 
-      const nuevosIds = objetivosFinales.filter((o) => o.id).map((o) => o.id);
+      const nuevosIds = objetivosFinales
+        .filter((o) => o.id !== undefined)
+        .map((o) => Number(o.id));
 
       const idsAEliminar = objetivosActuales
         .filter((obj) => !nuevosIds.includes(obj.id))
@@ -301,15 +296,17 @@ export class GoalService {
               description,
               goalListOrder: i + 1,
             });
+
+            console.log("llego");
+          } else {
+            await Objective.create({
+              userId,
+              goalId: Number(goalId),
+              title,
+              description,
+              goalListOrder: i + 1,
+            });
           }
-        } else {
-          await Objective.create({
-            userId,
-            goalId: id,
-            title,
-            description,
-            goalListOrder: i + 1,
-          });
         }
       }
 

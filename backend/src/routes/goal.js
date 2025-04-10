@@ -143,13 +143,12 @@ router.get(
 
 // Modify Goal and Objectives
 router.patch("/:id/update", authenticateToken, async (req, res) => {
-  const goalService = new GoalService({
-    ...req.body,
-    id: req.params.id,
-    userId: req.user.id,
-  });
+  const goalService = new GoalService(req.body);
 
-  const result = await goalService.modifyGoalWithObjectives();
+  const result = await goalService.modifyGoalWithObjectives(
+    req.user.id,
+    req.params.id
+  );
 
   if (!(result instanceof Error)) {
     res.json({ message: result });
