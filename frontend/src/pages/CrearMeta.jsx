@@ -28,13 +28,12 @@ function CrearMeta() {
   };
 
   const handleAgregarObjetivo = () => {
-    if (isDragging.current) return;
-
     const hayVacio = objetivos.some(
       (obj) => !obj.title.trim() && !obj.description.trim()
     );
+  
     if (hayVacio) return;
-
+  
     setObjetivos((prev) => [
       ...prev,
       {
@@ -46,6 +45,7 @@ function CrearMeta() {
     ]);
     setCambiosPendientes(true);
   };
+  
 
   const handleEliminarObjetivo = (index) => {
     if (isDragging.current) return;
@@ -146,17 +146,32 @@ function CrearMeta() {
     const llenos = lista.filter(
       (obj) => obj.title.trim() || obj.description.trim()
     );
-
-    return [
-      ...llenos,
-      {
-        id: String(nextId.current++),
-        title: "",
-        description: "",
-        order: llenos.length + 1,
-      },
-    ];
+  
+    const vacíos = lista.filter(
+      (obj) => !obj.title.trim() && !obj.description.trim()
+    );
+  
+    const unoVacio =
+      vacíos.length > 0
+        ? [
+            {
+              ...vacíos[0],
+              id: String(nextId.current++),
+              title: "",
+              description: "",
+              order: llenos.length + 1,
+            },
+          ]
+        : [];
+  
+    const nuevos = [...llenos, ...unoVacio];
+  
+    return nuevos.map((obj, index) => ({
+      ...obj,
+      order: index + 1,
+    }));
   };
+  
 
   return (
     <div className="crear-meta-container">

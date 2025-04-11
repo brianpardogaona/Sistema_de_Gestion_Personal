@@ -58,18 +58,29 @@ function EditarMeta() {
       (obj) => obj.title.trim() || obj.description.trim()
     );
 
-    return [
-      ...llenos.map((obj, index) => ({
-        ...obj,
-        order: index + 1,
-      })),
-      {
-        id: String(nextId.current++),
-        title: "",
-        description: "",
-        order: llenos.length + 1,
-      },
-    ];
+    const vacíos = lista.filter(
+      (obj) => !obj.title.trim() && !obj.description.trim()
+    );
+
+    const unoVacio =
+      vacíos.length > 0
+        ? [
+            {
+              ...vacíos[0],
+              id: String(nextId.current++),
+              title: "",
+              description: "",
+              order: llenos.length + 1,
+            },
+          ]
+        : [];
+
+    const nuevos = [...llenos, ...unoVacio];
+
+    return nuevos.map((obj, index) => ({
+      ...obj,
+      order: index + 1,
+    }));
   };
 
   const reorder = (list, startIndex, endIndex) => {
@@ -112,21 +123,24 @@ function EditarMeta() {
   };
 
   const handleAgregarObjetivo = () => {
-    const llenos = objetivos.filter(
-      (obj) => obj.title.trim() || obj.description.trim()
+    const hayVacio = objetivos.some(
+      (obj) => !obj.title.trim() && !obj.description.trim()
     );
-
-    setObjetivos([
-      ...llenos,
+  
+    if (hayVacio) return;
+  
+    setObjetivos((prev) => [
+      ...prev,
       {
         id: String(nextId.current++),
         title: "",
         description: "",
-        order: llenos.length + 1,
+        order: prev.length + 1,
       },
     ]);
     setCambiosPendientes(true);
   };
+  
 
   const handleEliminarObjetivo = (index) => {
     if (isDragging.current) return;
