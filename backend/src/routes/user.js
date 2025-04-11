@@ -13,6 +13,25 @@ router.get("/", async (req, res) => {
   res.send(await user.getAllUsers());
 });
 
+// Modify user
+router.patch("/", authenticateToken, async (req, res) => {
+  const id = req.user.id; // ← importante
+  const userService = new UserService({ id, ...req.body });
+
+  try {
+    const result = await userService.modifyUser();
+
+    if (!(result instanceof Error)) {
+      res.status(200).json({ message: result });
+    } else {
+      res.status(400).json({ error: result.message });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+
 // Login
 router.post("/login", async (req, res) => {
   const userService = new UserService(req.body);
@@ -99,22 +118,6 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// Modify user
-router.patch("/:id", async (req, res) => {
-  const id = req.params.id;
-  const userService = new UserService({ id, ...req.body });
 
-  try {
-    const result = await userService.modifyUser();
-
-    if (!(result instanceof Error)) {
-      res.status(200).json({ message: result });
-    } else {
-      res.status(400).json({ error: result.message });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error interno del servidor" });
-  }
-});
 
 export default router;

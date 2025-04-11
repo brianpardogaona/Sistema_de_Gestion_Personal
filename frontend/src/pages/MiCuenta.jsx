@@ -52,7 +52,7 @@ function MiCuenta() {
     }
 
     try {
-      const response = await fetch(API_URL + `user/${user.id}`, {
+      const response = await fetch(API_URL + `user`, {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -65,6 +65,7 @@ function MiCuenta() {
           password: formData.password || undefined,
         }),
       });
+      
 
       if (!response.ok) throw new Error("Error al actualizar el perfil");
 
