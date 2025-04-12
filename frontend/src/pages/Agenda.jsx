@@ -64,16 +64,14 @@ function Agenda() {
     setOrdenAscendente(true);
   };
 
-  const objetivosFiltrados = objetivos.sort((a, b) => {
-    if (filtro === "nombre") {
-      return ordenAscendente
-        ? a.title.localeCompare(b.title)
-        : b.title.localeCompare(a.title);
-    }
+  const objetivosFiltrados = objetivos
+  .filter((obj) => obj.agendaListOrder !== null)
+  .sort((a, b) => {
     return ordenAscendente
-      ? new Date(a.createdAt) - new Date(b.createdAt)
-      : new Date(b.createdAt) - new Date(a.createdAt);
+      ? a.agendaListOrder - b.agendaListOrder
+      : b.agendaListOrder - a.agendaListOrder;
   });
+
 
   return (
     <>

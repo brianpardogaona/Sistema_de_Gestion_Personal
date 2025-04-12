@@ -58,47 +58,47 @@ export class ObjectiveService {
           "Estado inválido. Debe ser 'pending', 'inprogress' o 'completed'."
         );
       }
-
+  
+      const objective = await Objective.findOne({ where: { id } });
+      if (!objective) throw new Error("Objetivo no encontrado.");
+  
       const updateData = { state: newState };
-
+  
       if (newState === "completed") {
         updateData.completedAt = new Date();
+        updateData.agendaListOrder = null; 
       } else {
         updateData.completedAt = null;
       }
-
+  
+      if (newState === "inprogress") {
+        const maxOrder = await Objective.max("agendaListOrder", {
+          where: { state: "inprogress" },
+        });
+  
+        updateData.agendaListOrder = (maxOrder || 0) + 1;
+      }
+  
       const updated = await Objective.update(updateData, { where: { id } });
-
-      if (updated[0] !== 1) {
-        throw new Error("No se encontró el objetivo.");
-      }
-
-      const objective = await Objective.findOne({ where: { id } });
-
-      if (!objective) {
-        throw new Error(
-          "No se encontró el objetivo después de la actualización."
-        );
-      }
-
+  
+      if (updated[0] !== 1) throw new Error("No se pudo actualizar el objetivo.");
+  
       if (newState === "completed") {
         const remainingObjectives = await Objective.findAll({
           where: { goalId: objective.goalId, state: { [Op.not]: "completed" } },
         });
-
+  
         if (remainingObjectives.length === 0) {
-          await Goal.update(
-            { state: "completed" },
-            { where: { id: objective.goalId } }
-          );
+          await Goal.update({ state: "completed" }, { where: { id: objective.goalId } });
         }
       }
-
+  
       return `Estado del objetivo actualizado a '${newState}'.`;
     } catch (error) {
       return error;
     }
   }
+  
 
   async getObjectivesByState(userId, state) {
     const { Objective } = getModels();
