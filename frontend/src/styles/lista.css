@@ -220,3 +220,18 @@
   color: #0056b3;
 }
 
+.meta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: background 0.2s ease-in-out;
+}
+
+.meta:hover {
+  background: #f1f1f1;
+}
+
+.meta .meta-header {
+  cursor: grab;
+}

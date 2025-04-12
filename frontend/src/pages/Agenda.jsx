@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { List } from "react-feather";
 import Navbar from "./NavBar";
 import "../styles/lista.css";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const API_URL = "http://localhost:4000/api/";
 
@@ -65,13 +66,52 @@ function Agenda() {
   };
 
   const objetivosFiltrados = objetivos
-  .filter((obj) => obj.agendaListOrder !== null)
-  .sort((a, b) => {
-    return ordenAscendente
-      ? a.agendaListOrder - b.agendaListOrder
-      : b.agendaListOrder - a.agendaListOrder;
-  });
+    .filter((obj) => obj.agendaListOrder !== null)
+    .sort((a, b) => {
+      return ordenAscendente
+        ? a.agendaListOrder - b.agendaListOrder
+        : b.agendaListOrder - a.agendaListOrder;
+    });
 
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result.map((item, index) => ({
+      ...item,
+      agendaListOrder: index + 1,
+    }));
+  };
+
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+
+    const nuevos = reorder(
+      objetivosFiltrados,
+      result.source.index,
+      result.destination.index
+    );
+
+    setObjetivos(nuevos);
+
+    try {
+      const response = await fetch(
+        API_URL + "objective/user/update-agenda-order",
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            order: nuevos.map((obj) => obj.id),
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error("No se pudo actualizar el orden");
+    } catch (err) {
+      console.error("Error al actualizar orden:", err);
+    }
+  };
 
   return (
     <>
@@ -95,29 +135,51 @@ function Agenda() {
             </div>
           </div>
 
-          {objetivosFiltrados.length > 0 ? (
-            objetivosFiltrados.map((obj) => (
-              <div key={obj.id} className="meta">
-                <div className="meta-header">
-                  <span className="meta-nombre">{obj.title}</span>
-                  <span className="meta-fecha">
-                    {formatearFecha(obj.createdAt)}
-                  </span>
-                  <button
-                    className="info-btn"
-                    onClick={() => navigate(`/info-meta/${obj.metaId}`)}
-                  >
-                    ℹ️
-                  </button>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="agenda">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  {objetivosFiltrados.map((obj, index) => (
+                    <Draggable
+                      key={obj.id.toString()}
+                      draggableId={obj.id.toString()}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          className="meta"
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <div className="meta-header">
+                            <span className="meta-nombre">{obj.title}</span>
+                            <span className="meta-fecha">
+                              {formatearFecha(obj.createdAt)}
+                            </span>
+                            <button
+                              className="info-btn"
+                              onClick={() =>
+                                navigate(`/info-meta/${obj.metaId}`)
+                              }
+                            >
+                              ℹ️
+                            </button>
+                          </div>
+                          <div className="meta-asociada">
+                            <span className="meta-titulo">
+                              {obj.metaTitulo}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
                 </div>
-                <div className="meta-asociada">
-                  <span className="meta-titulo">{obj.metaTitulo}</span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="no-metas">No hay objetivos disponibles.</p>
-          )}
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
       </div>
     </>

@@ -197,4 +197,38 @@ export class ObjectiveService {
       return error;
     }
   }
+
+  async updateAgendaOrder(order, userId) {
+    const { Objective } = getModels();
+
+    try {
+      const objectives = await Objective.findAll({
+        where: {
+          userId,
+          state: "inprogress",
+          id: {
+            [Op.in]: order,
+          },
+        },
+      });
+
+      if (objectives.length !== order.length) {
+        throw new Error(
+          "Algunos objetivos no existen o no están en estado 'inprogress'."
+        );
+      }
+
+      const updates = order.map((id, index) => {
+        return Objective.update(
+          { agendaListOrder: index + 1 },
+          { where: { id, userId, state: "inprogress" } }
+        );
+      });
+
+      await Promise.all(updates);
+      return true;
+    } catch (error) {
+      return error;
+    }
+  }
 }

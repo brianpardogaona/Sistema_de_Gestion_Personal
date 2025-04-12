@@ -22,7 +22,9 @@ router.post("/create", authenticateToken, async (req, res) => {
 router.get("/completed-per-month", authenticateToken, async (req, res) => {
   try {
     const objectiveService = new ObjectiveService();
-    const result = await objectiveService.getCompletedObjectivesByMonth(req.user.id);
+    const result = await objectiveService.getCompletedObjectivesByMonth(
+      req.user.id
+    );
 
     if (result instanceof Error) {
       res.status(500).json({ error: result.message });
@@ -33,7 +35,6 @@ router.get("/completed-per-month", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
-
 
 // Delete objective
 router.delete("/:id", authenticateToken, async (req, res) => {
@@ -137,5 +138,38 @@ router.get("/general-completion", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
+// Upadate Agenda Order
+router.patch(
+  "/user/update-agenda-order",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { order } = req.body;
+
+      if (!Array.isArray(order) || order.length === 0) {
+        return res
+          .status(400)
+          .json({ error: "El orden debe ser un array no vacío de IDs." });
+      }
+
+      const objectiveService = new ObjectiveService();
+      const result = await objectiveService.updateAgendaOrder(
+        order,
+        req.user.id
+      );
+
+      if (result instanceof Error) {
+        return res.status(400).json({ error: result.message });
+      }
+
+      res
+        .status(200)
+        .json({ message: "Orden de la agenda actualizado correctamente." });
+    } catch (error) {
+      res.status(500).json({ error: "Error interno del servidor." });
+    }
+  }
+);
 
 export default router;
