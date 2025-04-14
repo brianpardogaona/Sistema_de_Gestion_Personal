@@ -60,7 +60,7 @@ function Login() {
       <div id="right-side">
         <div id="title">
           <h1 className="bold">
-            BIENVENIDO/A A TU GESTOR DE PROGRESO PERSONAL
+            BIENVENIDOS A VUESTRO GESTOR DE PROGRESO PERSONAL
           </h1>
         </div>
         <div id="panel">
