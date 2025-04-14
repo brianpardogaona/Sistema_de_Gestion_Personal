@@ -9,29 +9,15 @@ const API_URL = "http://localhost:4000/api/";
 
 function formatearFecha(fechaStr) {
   const meses = [
-    "enero",
-    "febrero",
-    "marzo",
-    "abril",
-    "mayo",
-    "junio",
-    "julio",
-    "agosto",
-    "septiembre",
-    "octubre",
-    "noviembre",
-    "diciembre",
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
   ];
   const fecha = new Date(fechaStr);
-  return `${fecha.getDate()} de ${
-    meses[fecha.getMonth()]
-  } de ${fecha.getFullYear()}`;
+  return `${fecha.getDate()} de ${meses[fecha.getMonth()]} de ${fecha.getFullYear()}`;
 }
 
 function Agenda() {
   const [objetivos, setObjetivos] = useState([]);
-  const [filtro, setFiltro] = useState("fecha");
-  const [ordenAscendente, setOrdenAscendente] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,20 +44,9 @@ function Agenda() {
     fetchObjetivos();
   }, []);
 
-  const toggleOrden = () => setOrdenAscendente(!ordenAscendente);
-
-  const handleFiltroChange = (e) => {
-    setFiltro(e.target.value);
-    setOrdenAscendente(true);
-  };
-
   const objetivosFiltrados = objetivos
     .filter((obj) => obj.agendaListOrder !== null)
-    .sort((a, b) => {
-      return ordenAscendente
-        ? a.agendaListOrder - b.agendaListOrder
-        : b.agendaListOrder - a.agendaListOrder;
-    });
+    .sort((a, b) => a.agendaListOrder - b.agendaListOrder);
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -123,18 +98,6 @@ function Agenda() {
             <h2>Agenda</h2>
           </div>
 
-          <div className="header">
-            <div className="filtro">
-              <select value={filtro} onChange={handleFiltroChange}>
-                <option value="fecha">Ordenar por Fecha</option>
-                <option value="nombre">Ordenar por Nombre</option>
-              </select>
-              <button className="orden-btn" onClick={toggleOrden}>
-                {ordenAscendente ? "▲" : "▼"}
-              </button>
-            </div>
-          </div>
-
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="agenda">
               {(provided) => (
@@ -159,17 +122,13 @@ function Agenda() {
                             </span>
                             <button
                               className="info-btn"
-                              onClick={() =>
-                                navigate(`/info-meta/${obj.metaId}`)
-                              }
+                              onClick={() => navigate(`/info-meta/${obj.metaId}`)}
                             >
                               ℹ️
                             </button>
                           </div>
                           <div className="meta-asociada">
-                            <span className="meta-titulo">
-                              {obj.metaTitulo}
-                            </span>
+                            <span className="meta-titulo">{obj.metaTitulo}</span>
                           </div>
                         </div>
                       )}
