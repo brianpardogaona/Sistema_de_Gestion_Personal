@@ -67,3 +67,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.graph-content{
+  margin-top: 100px;
+  margin-left: 22.5%;
+}

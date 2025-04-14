@@ -237,99 +237,69 @@ function Grafica() {
     });
   };
 
-  return (
-    <div
-      className="chart-container"
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
-      <div className="chart-tabs" style={{ marginBottom: "20px" }}>
-        <button
-          onClick={() => setActiveTab("bar")}
-          className={activeTab === "bar" ? "active" : ""}
-        >
-          Objetivos por mes
-        </button>
-        <button
-          onClick={() => setActiveTab("doughnut")}
-          className={activeTab === "doughnut" ? "active" : ""}
-        >
-          Objetivos generales
-        </button>
-        <button
-          onClick={() => setActiveTab("select")}
-          className={activeTab === "select" ? "active" : ""}
-        >
-          Objetivos por meta
-        </button>
-      </div>
-
-      {activeTab === "select" ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div>
-            {goalData.map((goal) => (
-              <label
-                key={goal.id}
-                style={{ marginRight: "50px", fontWeight: "bold" }}
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedCharts.includes(goal.id)}
-                  onChange={() => toggleChart(goal.id)}
-                  disabled={
-                    !selectedCharts.includes(goal.id) &&
-                    selectedCharts.length >= 4
-                  }
-                />
-                {"  " + goal.title}
-              </label>
-            ))}
-          </div>
-
-          {selectedCharts.length > 0 && (
-            <div
-              className="chart-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "10px",
-                marginBottom: "60px",
-              }}
-            >
-              {selectedCharts.map((goalId, index) => {
-                const goal = goalData.find((g) => g.id === goalId);
-                return (
-                  <div
-                    key={index}
-                    style={{
-                      width: "300px",
-                      height: "250px",
-                      textAlign: "center",
-                      marginTop: "30px",
-                    }}
-                  >
-                    <p style={{ fontSize: "18px", fontWeight: "bold" }}>
-                      {goal.title}
-                    </p>
-                    <canvas id={`chart-${index}`} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="chart-space" style={{ width: "50%", height: "400px" }}>
-          <canvas ref={chartRef}></canvas>
-        </div>
-      )}
+return (
+  <div className="chart-container">
+    <div className="chart-tabs">
+      <button
+        onClick={() => setActiveTab("bar")}
+        className={activeTab === "bar" ? "active" : ""}
+      >
+        Objetivos por mes
+      </button>
+      <button
+        onClick={() => setActiveTab("doughnut")}
+        className={activeTab === "doughnut" ? "active" : ""}
+      >
+        Objetivos generales
+      </button>
+      <button
+        onClick={() => setActiveTab("select")}
+        className={activeTab === "select" ? "active" : ""}
+      >
+        Objetivos por meta
+      </button>
     </div>
-  );
+
+    {activeTab === "select" ? (
+      <div className="chart-select-tab">
+        <div className="goal-list">
+          <h3>Selecciona tus metas:</h3>
+          {goalData.map((goal) => (
+            <label key={goal.id} className="goal-checkbox">
+              <input
+                type="checkbox"
+                checked={selectedCharts.includes(goal.id)}
+                onChange={() => toggleChart(goal.id)}
+                disabled={
+                  !selectedCharts.includes(goal.id) &&
+                  selectedCharts.length >= 4
+                }
+              />
+              {goal.title}
+            </label>
+          ))}
+        </div>
+
+        <div className="selected-charts">
+          {selectedCharts.map((goalId, index) => {
+            const goal = goalData.find((g) => g.id === goalId);
+            return (
+              <div className="goal-chart" key={index}>
+                <p className="goal-title">{goal.title}</p>
+                <canvas id={`chart-${index}`} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ) : (
+      <div className="chart-space">
+        <canvas ref={chartRef}></canvas>
+      </div>
+    )}
+  </div>
+);
+
 }
 
 export default Grafica;

@@ -4,7 +4,6 @@ import NavBar from "./NavBar";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import "../styles/general.css"
 import "../styles/inicio.css"
 
 // Components
@@ -14,7 +13,7 @@ function Inicio() {
   return (
     <>
       <NavBar />
-      <div className="page-content">
+      <div className="graph-content">
         <div className="chart-space">
           <Grafica />
         </div>

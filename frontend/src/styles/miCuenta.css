@@ -2,10 +2,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-top: 100px;
-  background-color: white;
+  justify-content: flex-start;
+  padding-top: 100px;
+  min-height: 100vh;
+  background-color: #f4f4f4; /* Fondo sutil gris */
 }
+
+
 
 .title {
   font-size: 36px;
@@ -15,14 +18,15 @@
 }
 
 .account-box {
-  background-color: #ececec;
+  background-color: #ffffff;
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 500px;
+  width: 100%;
+  max-width: 600px;
 }
 
 .user-image {
@@ -30,11 +34,9 @@
   height: 100px;
   border-radius: 50%;
   margin-bottom: 20px;
-  background-color: #ececec;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
+  background-color: #f2f2f2;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 .inputs-container {
@@ -51,13 +53,18 @@
 
 .inputs-container input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 5px;
-  border-radius: 5px;
-  border: 3px solid #000000;
+  border-radius: 8px;
+  border: 2px solid #ccc;
   background-color: #f8f9fa;
   color: #000000;
-  font-weight: bold;
+  font-weight: 500;
+  transition: border-color 0.3s ease;
+}
+.inputs-container input:focus {
+  border-color: #000;
+  outline: none;
 }
 
 .inputs-container input:disabled {
@@ -94,13 +101,14 @@
 }
 
 .delete-button {
-  background-color: rgb(231, 60, 60);
+  background-color: #ff4d4d;
   color: white;
   display: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .delete-button:hover {
-  background-color: rgb(180, 80, 80);
+  background-color: #d93636;
   transform: scale(1.05);
 }
 

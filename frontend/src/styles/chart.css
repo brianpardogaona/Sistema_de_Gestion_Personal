@@ -1,39 +1,111 @@
-.chart-space {
-  height: 50vh;
-}
-
 .chart-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  width: 100%;
+
 }
 
 .chart-tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
 }
 
 .chart-tabs button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  background-color: #f4f4f4;
+  color: #333;
   cursor: pointer;
-  background-color: #ececec;
-  color: black;
-  border-radius: 8px;
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.2s;
-  box-shadow: 3px 3px 3px 3px rgba(15, 15, 15, 0.2);
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .chart-tabs button:hover {
+  background-color: #e0e0e0;
   transform: scale(1.05);
 }
 
 .chart-tabs .active {
-  background-color: black;
+  background-color: #1f1f1f;
   color: white;
-  border: 10px black ;
-  box-shadow: 3px 3px 3px 3px rgba(15, 15, 15, 0.2);
 }
+
+.chart-space {
+  width: 70%;
+  height: 500px;
+  padding: 10px;
+}
+
+.chart-select-tab {
+  display: flex;
+  width: 100%;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.goal-list {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background-color: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.goal-list h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.goal-checkbox {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selected-charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  flex: 1;
+}
+
+.goal-chart {
+  width: 300px;
+  height: 300px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.goal-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+
+.goal-chart canvas {
+  width: 230px !important;
+  height: auto !important;
+}
+
+
