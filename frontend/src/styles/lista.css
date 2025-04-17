@@ -6,7 +6,7 @@
   padding: 30px;
   border-radius: 14px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .agenda-titulo {
@@ -152,24 +152,33 @@
   color: #1f2937;
 }
 
+.objetivo-titulo {
+  margin-top: 5px;
+}
+
 .estado-circulo {
   width: 14px;
   height: 14px;
   border-radius: 50%;
   display: inline-block;
   margin-left: 8px;
+  margin-top: 8px;
+  vertical-align: middle;
 }
 
 .estado-circulo.pending {
-  background-color: #fcd34d;
+  border: 2px solid #000000;
+  background-color: transparent;
 }
 
 .estado-circulo.inprogress {
-  background-color: #60a5fa;
+  background-color: #fcd34d;
+  border: none;
 }
 
 .estado-circulo.completed {
   background-color: #4ade80;
+  border: none;
 }
 
 .objetivo-item select {
@@ -178,9 +187,12 @@
   border-radius: 6px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
+  margin-right: 8px;
+  margin-top: 0px;
 }
 
 .fecha {
+  margin-top: 8px;
   font-size: 13px;
   color: #6b7280;
 }
