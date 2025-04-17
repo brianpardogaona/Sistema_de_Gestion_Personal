@@ -5,10 +5,8 @@
   justify-content: flex-start;
   padding-top: 100px;
   min-height: 100vh;
-  background-color: #f4f4f4; /* Fondo sutil gris */
+  background-color: #f4f4f4;
 }
-
-
 
 .title {
   font-size: 36px;
@@ -36,7 +34,7 @@
   margin-bottom: 20px;
   background-color: #f2f2f2;
   object-fit: cover;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .inputs-container {
@@ -96,17 +94,23 @@
 }
 
 .edit-button:hover {
-  background-color: rgb(51, 50, 50);
+  background-color: #333;
   transform: scale(1.05);
 }
 
+.password-button {
+  background-color: #9cafe7;
+  color: #1a1a1a;
+}
+
+.password-button:hover {
+  background-color: #8fa7f0;
+  transform: scale(1.05);
+}
 .delete-button {
   background-color: #ff4d4d;
   color: white;
-  display: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .delete-button:hover {
   background-color: #d93636;
   transform: scale(1.05);

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import "../styles/miCuenta.css";
 import NavBar from "./NavBar";
+import ModalCuenta from "./ModalCuenta";
 
 const API_URL = "http://localhost:4000/api/";
 
@@ -13,8 +14,20 @@ function MiCuenta() {
     name: "",
     lastName: "",
     username: "",
-    password: "",
-    confirmPassword: "",
+  });
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+
+  const [passwordErrors, setPasswordErrors] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmNewPassword: false,
   });
 
   useEffect(() => {
@@ -29,7 +42,7 @@ function MiCuenta() {
 
         const data = await response.json();
         setUser(data);
-        setFormData({ ...data, password: "", confirmPassword: "" });
+        setFormData({ ...data });
       } catch (error) {
         console.error("Error cargando perfil:", error);
       }
@@ -39,18 +52,10 @@ function MiCuenta() {
   }, []);
 
   const handleEdit = () => {
-    if (editMode) {
-      handleSave();
-    }
     setEditMode(!editMode);
   };
 
   const handleSave = async () => {
-    if (formData.password && formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
-      return;
-    }
-
     try {
       const response = await fetch(API_URL + `user`, {
         method: "PATCH",
@@ -58,20 +63,14 @@ function MiCuenta() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: formData.name,
-          lastName: formData.lastName,
-          username: formData.username,
-          password: formData.password || undefined,
-        }),
+        body: JSON.stringify(formData),
       });
-      
 
       if (!response.ok) throw new Error("Error al actualizar el perfil");
 
       const result = await response.json();
       alert(result.message);
-      setUser({ ...formData, password: "", confirmPassword: "" });
+      setUser({ ...formData });
       setEditMode(false);
     } catch (error) {
       console.error("Error al actualizar:", error);
@@ -82,8 +81,80 @@ function MiCuenta() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar cuenta");
+  const handlePasswordFormChange = (e) => {
+    setPasswordForm({ ...passwordForm, [e.target.name]: e.target.value });
+  };
+
+  const openModal = (type) => {
+    setModalType(type);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
+  };
+
+  const handlePasswordUpdate = async () => {
+    const { currentPassword, newPassword, confirmNewPassword } = passwordForm;
+
+    const errors = {
+      currentPassword: !currentPassword,
+      newPassword: !newPassword,
+      confirmNewPassword: !confirmNewPassword,
+    };
+
+    setPasswordErrors(errors);
+
+    if (Object.values(errors).some((field) => field)) {
+      alert("Por favor, rellena todos los campos.");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordErrors({
+        ...errors,
+        confirmNewPassword: true,
+      });
+      alert("Las contraseñas nuevas no coinciden");
+      return;
+    }
+
+    try {
+      const response = await fetch(API_URL + "user/change-password", {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error);
+        return;
+      }
+
+      alert(data.message);
+      closeModal();
+    } catch (err) {
+      console.error("Error al cambiar contraseña:", err);
+      alert("Ocurrió un error inesperado.");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    alert(
+      "Aquí se haría la petición para eliminar la cuenta con la contraseña actual."
+    );
+    closeModal();
   };
 
   return (
@@ -91,12 +162,13 @@ function MiCuenta() {
       <NavBar />
       <div className="account-container">
         <h1 className="title">MI CUENTA</h1>
-        <div className={`account-box ${editMode ? "editar-activo" : ""}`}>
+        <div className="account-box">
           <img
             src="../../public/images/perfil.png"
             alt="Usuario"
             className="user-image"
           />
+
           <div className="inputs-container">
             <div className="nombre-apellidos">
               <div className="input-group">
@@ -120,6 +192,7 @@ function MiCuenta() {
                 />
               </div>
             </div>
+
             <br />
             <label>NOMBRE DE USUARIO</label>
             <Input
@@ -129,41 +202,47 @@ function MiCuenta() {
               onChange={handleChange}
               disabled={!editMode}
             />
-
-            {editMode && (
-              <>
-                <br />
-                <label>CONTRASEÑA</label>
-                <Input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Nueva contraseña"
-                />
-
-                <label>CONFIRMAR CONTRASEÑA</label>
-                <Input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirmar nueva contraseña"
-                />
-              </>
-            )}
           </div>
 
           <div className="buttons-container">
-            <Button className="edit-button" onClick={handleEdit}>
-              {editMode ? "Guardar cambios" : "Editar cuenta"}
-            </Button>
-            <Button className="delete-button" onClick={handleDelete}>
-              Eliminar cuenta
-            </Button>
+            {editMode ? (
+              <>
+                <Button className="edit-button" onClick={handleSave}>
+                  Guardar cambios
+                </Button>
+                <Button
+                  className="password-button"
+                  onClick={() => openModal("editar")}
+                >
+                  Editar contraseña
+                </Button>
+                <Button
+                  className="delete-button"
+                  onClick={() => openModal("eliminar")}
+                >
+                  Eliminar cuenta
+                </Button>
+              </>
+            ) : (
+              <Button className="edit-button" onClick={handleEdit}>
+                Editar cuenta
+              </Button>
+            )}
           </div>
         </div>
       </div>
+
+      <ModalCuenta
+        tipo={modalType}
+        visible={modalVisible}
+        onClose={closeModal}
+        onSubmit={
+          modalType === "editar" ? handlePasswordUpdate : handleDeleteAccount
+        }
+        formData={passwordForm}
+        handleChange={handlePasswordFormChange}
+        errors={passwordErrors}
+      />
     </>
   );
 }

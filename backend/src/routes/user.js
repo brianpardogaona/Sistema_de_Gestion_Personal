@@ -31,7 +31,6 @@ router.patch("/", authenticateToken, async (req, res) => {
   }
 });
 
-
 // Login
 router.post("/login", async (req, res) => {
   const userService = new UserService(req.body);
@@ -104,6 +103,29 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Change password
+router.patch("/change-password", authenticateToken, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Faltan campos obligatorios." });
+  }
+
+  try {
+    const userService = new UserService(req.body);
+    const result = await userService.changePassword(req.user.id);
+
+    if (result instanceof Error) {
+      return res.status(400).json({ error: result.message });
+    }
+
+    res.json({ message: "Contraseña actualizada correctamente." });
+  } catch (error) {
+    console.error("Error cambiando contraseña:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
 // Delete user by id
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
@@ -117,7 +139,5 @@ router.delete("/:id", async (req, res) => {
     res.status(400).json({ error: result.message });
   }
 });
-
-
 
 export default router;

@@ -57,21 +57,23 @@ export class UserService {
       Validation.name(this.body.name);
       Validation.name(this.body.lastName);
       Validation.password(this.body.password);
-  
+
       this.body.password = await bcrypt.hash(
         this.body.password,
         Number(process.env.SALTS_ROUNDS)
       );
-  
+
       const { User } = await getModels();
-  
-      const existingUser = await User.findOne({ where: { username: this.body.username } });
+
+      const existingUser = await User.findOne({
+        where: { username: this.body.username },
+      });
       if (existingUser) {
         throw new Error("El nombre de usuario ya está en uso.");
       }
-  
+
       const newUser = await User.create(this.body);
-  
+
       return newUser;
     } catch (error) {
       return error;
@@ -131,6 +133,39 @@ export class UserService {
       });
 
       return user ? user.dataValues : new Error("Usuario no encontrado.");
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async changePassword(userId) {
+    try {
+      const { User } = await getModels();
+      const user = await User.findByPk(userId);
+
+      if (!user) {
+        throw new Error("Usuario no encontrado.");
+      }
+
+      const isMatch = await bcrypt.compare(
+        this.body.currentPassword,
+        user.password
+      );
+      if (!isMatch) {
+        throw new Error("La contraseña actual no es correcta.");
+      }
+
+      Validation.password(this.body.newPassword);
+
+      const hashedPassword = await bcrypt.hash(
+        this.body.newPassword,
+        Number(process.env.SALTS_ROUNDS)
+      );
+
+      user.password = hashedPassword;
+      await user.save();
+
+      return true;
     } catch (error) {
       return error;
     }
