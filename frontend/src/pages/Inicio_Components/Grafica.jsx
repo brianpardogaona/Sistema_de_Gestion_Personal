@@ -91,7 +91,7 @@ function Grafica() {
   }, []);
 
   const generalChartData = {
-    labels: ["OBJETIVOS PENDIENTES", "OBJETIVOS COMPLETADOS"],
+    labels: ["OBJETIVOS NO COMPLETADOS", "OBJETIVOS COMPLETADOS"],
     datasets: [
       {
         label: "Objetivos generales",
@@ -189,7 +189,7 @@ function Grafica() {
         doughnutCharts.current[index] = new Chart(ctx, {
           type: "doughnut",
           data: {
-            labels: ["COMPLETADOS", "PENDIENTES"],
+            labels: ["COMPLETADOS", "NO COMPLETADOS"],
             datasets: [
               {
                 label: goal.title,
