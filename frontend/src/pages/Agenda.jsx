@@ -9,11 +9,23 @@ const API_URL = "http://localhost:4000/api/";
 
 function formatearFecha(fechaStr) {
   const meses = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
   ];
   const fecha = new Date(fechaStr);
-  return `${fecha.getDate()} de ${meses[fecha.getMonth()]} de ${fecha.getFullYear()}`;
+  return `${fecha.getDate()} de ${
+    meses[fecha.getMonth()]
+  } de ${fecha.getFullYear()}`;
 }
 
 function Agenda() {
@@ -102,38 +114,46 @@ function Agenda() {
             <Droppable droppableId="agenda">
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {objetivosFiltrados.map((obj, index) => (
-                    <Draggable
-                      key={obj.id.toString()}
-                      draggableId={obj.id.toString()}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          className="meta"
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <div className="meta-header">
-                            <span className="meta-nombre">{obj.title}</span>
-                            <span className="meta-fecha">
-                              {formatearFecha(obj.createdAt)}
-                            </span>
-                            <button
-                              className="info-btn"
-                              onClick={() => navigate(`/info-meta/${obj.metaId}`)}
-                            >
-                              ℹ️
-                            </button>
+                  {objetivosFiltrados.length > 0 ? (
+                    objetivosFiltrados.map((obj, index) => (
+                      <Draggable
+                        key={obj.id.toString()}
+                        draggableId={obj.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            className="meta"
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <div className="meta-header">
+                              <span className="meta-nombre">{obj.title}</span>
+                              <span className="meta-fecha">
+                                {formatearFecha(obj.createdAt)}
+                              </span>
+                              <button
+                                className="info-btn"
+                                onClick={() =>
+                                  navigate(`/info-meta/${obj.metaId}`)
+                                }
+                              >
+                                ℹ️
+                              </button>
+                            </div>
+                            <div className="meta-asociada">
+                              <span className="meta-titulo">
+                                {obj.metaTitulo}
+                              </span>
+                            </div>
                           </div>
-                          <div className="meta-asociada">
-                            <span className="meta-titulo">{obj.metaTitulo}</span>
-                          </div>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                        )}
+                      </Draggable>
+                    ))
+                  ) : (
+                    <p className="no-metas">No hay objetivos en progreso.</p>
+                  )}
                   {provided.placeholder}
                 </div>
               )}
