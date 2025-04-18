@@ -28,6 +28,13 @@ function ModalCuenta({
           className={errors.currentPassword ? "input-error" : ""}
         />
 
+        {tipo === "eliminar" && (
+          <p className="warning-text">
+            Esta acción es irreversible. Toda tu información se eliminará
+            permanentemente.
+          </p>
+        )}
+
         {tipo === "editar" && (
           <>
             <label>Nueva contraseña</label>

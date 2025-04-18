@@ -151,9 +151,35 @@ function MiCuenta() {
   };
 
   const handleDeleteAccount = async () => {
-    alert(
-      "Aquí se haría la petición para eliminar la cuenta con la contraseña actual."
-    );
+    const { currentPassword } = passwordForm;
+
+    if (!currentPassword) {
+      alert("Por favor, introduce tu contraseña para confirmar.");
+      return;
+    }
+
+    try {
+      const response = await fetch(API_URL + "user", {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: currentPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error);
+        return;
+      }
+
+      alert(data.message);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Error eliminando cuenta:", error);
+      alert("Error inesperado al eliminar la cuenta.");
+    }
+
     closeModal();
   };
 

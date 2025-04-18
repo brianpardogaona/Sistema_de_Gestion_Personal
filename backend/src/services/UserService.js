@@ -170,4 +170,32 @@ export class UserService {
       return error;
     }
   }
+
+  async deleteUserWithPassword() {
+    const { User, Goal, Objective } = await getModels();
+
+    try {
+      const user = await User.findByPk(this.body.id);
+
+      if (!user) {
+        throw new Error("Usuario no encontrado.");
+      }
+
+      const isMatch = await bcrypt.compare(this.body.password, user.password);
+      if (!isMatch) {
+        throw new Error("La contraseña es incorrecta.");
+      }
+
+      const userGoals = await Goal.findAll({ where: { userId: user.id } });
+      const goalIds = userGoals.map((goal) => goal.id);
+
+      await Objective.destroy({ where: { goalId: goalIds } });
+      await Goal.destroy({ where: { userId: user.id } });
+      await User.destroy({ where: { id: user.id } });
+
+      return "Cuenta eliminada correctamente.";
+    } catch (error) {
+      return error;
+    }
+  }
 }

@@ -126,17 +126,23 @@ router.patch("/change-password", authenticateToken, async (req, res) => {
   }
 });
 
-// Delete user by id
-router.delete("/:id", async (req, res) => {
-  const id = req.params.id;
-  const body = { id: id };
-  const user = new UserService(body);
+// Delete account of an authenticated user (password is required)
+router.delete("/", authenticateToken, async (req, res) => {
+  const userService = new UserService({
+    id: req.user.id,
+    password: req.body.password,
+  });
 
-  const result = await user.deleteUser();
-  if (!(result instanceof Error)) {
-    res.send({ message: result });
-  } else {
-    res.status(400).json({ error: result.message });
+  try {
+    const result = await userService.deleteUserWithPassword();
+
+    if (result instanceof Error) {
+      return res.status(400).json({ error: result.message });
+    }
+
+    res.clearCookie("access-token").json({ message: result });
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
