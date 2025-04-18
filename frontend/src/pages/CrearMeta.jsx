@@ -2,10 +2,13 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/crearMeta.css";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import useAuth from "../hooks/userAuth";
 
 const API_URL = "http://localhost:4000/api/";
 
 function CrearMeta() {
+  useAuth();
+
   const navigate = useNavigate();
   const nextId = useRef(2);
   const isDragging = useRef(false);
@@ -31,9 +34,9 @@ function CrearMeta() {
     const hayVacio = objetivos.some(
       (obj) => !obj.title.trim() && !obj.description.trim()
     );
-  
+
     if (hayVacio) return;
-  
+
     setObjetivos((prev) => [
       ...prev,
       {
@@ -45,7 +48,6 @@ function CrearMeta() {
     ]);
     setCambiosPendientes(true);
   };
-  
 
   const handleEliminarObjetivo = (index) => {
     if (isDragging.current) return;
@@ -146,11 +148,11 @@ function CrearMeta() {
     const llenos = lista.filter(
       (obj) => obj.title.trim() || obj.description.trim()
     );
-  
+
     const vacíos = lista.filter(
       (obj) => !obj.title.trim() && !obj.description.trim()
     );
-  
+
     const unoVacio =
       vacíos.length > 0
         ? [
@@ -163,15 +165,14 @@ function CrearMeta() {
             },
           ]
         : [];
-  
+
     const nuevos = [...llenos, ...unoVacio];
-  
+
     return nuevos.map((obj, index) => ({
       ...obj,
       order: index + 1,
     }));
   };
-  
 
   return (
     <div className="crear-meta-container">

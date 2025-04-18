@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import "../styles/crearMeta.css";
+import useAuth from "../hooks/userAuth";
 
 const API_URL = "http://localhost:4000/api/";
 
 function EditarMeta() {
+  useAuth();
+
   const navigate = useNavigate();
   const { id } = useParams();
   const nextId = useRef(1000);
@@ -126,9 +129,9 @@ function EditarMeta() {
     const hayVacio = objetivos.some(
       (obj) => !obj.title.trim() && !obj.description.trim()
     );
-  
+
     if (hayVacio) return;
-  
+
     setObjetivos((prev) => [
       ...prev,
       {
@@ -140,7 +143,6 @@ function EditarMeta() {
     ]);
     setCambiosPendientes(true);
   };
-  
 
   const handleEliminarObjetivo = (index) => {
     if (isDragging.current) return;

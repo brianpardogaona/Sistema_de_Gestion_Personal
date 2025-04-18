@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/detalleMeta.css";
+import useAuth from "../hooks/userAuth";
 
 const estadosObjetivo = {
   pending: "Pendiente",
@@ -32,6 +33,8 @@ function formatearFecha(fechaStr) {
 }
 
 export default function DetalleMeta() {
+  useAuth();
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [meta, setMeta] = useState(null);

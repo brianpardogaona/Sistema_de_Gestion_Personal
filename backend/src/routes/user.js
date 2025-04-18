@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { authenticateToken } from "./middleware/authMiddleware.js";
 
+
 // services
 import { UserService } from "../services/UserService.js";
 
@@ -157,5 +158,22 @@ router.delete("/", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
+
+router.get("/validate-token", (req, res) => {
+  const token = req.cookies["access-token"];
+
+  if (!token) {
+    return res.status(401).json({ message: "No hay token" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_JWT_KEY);
+    return res.status(200).json({ message: "Token válido", user: decoded });
+  } catch (err) {
+    return res.status(401).json({ message: "Token inválido o expirado" });
+  }
+});
+
 
 export default router;

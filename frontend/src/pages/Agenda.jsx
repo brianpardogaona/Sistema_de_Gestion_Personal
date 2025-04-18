@@ -6,6 +6,7 @@ import "../styles/lista.css";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const API_URL = "http://localhost:4000/api/";
+import useAuth from "../hooks/userAuth";
 
 function formatearFecha(fechaStr) {
   const meses = [
@@ -29,6 +30,8 @@ function formatearFecha(fechaStr) {
 }
 
 function Agenda() {
+  useAuth();
+
   const [objetivos, setObjetivos] = useState([]);
   const navigate = useNavigate();
 

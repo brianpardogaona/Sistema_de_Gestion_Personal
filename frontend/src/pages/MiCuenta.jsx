@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import "../styles/miCuenta.css";
 import NavBar from "./NavBar";
 import ModalCuenta from "./ModalCuenta";
+import useAuth from "../hooks/userAuth";
 
 const API_URL = "http://localhost:4000/api/";
 
 function MiCuenta() {
+  useAuth();
+
   const [editMode, setEditMode] = useState(false);
   const [user, setUser] = useState({ name: "", lastName: "", username: "" });
   const [formData, setFormData] = useState({
