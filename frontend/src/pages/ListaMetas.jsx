@@ -129,6 +129,11 @@ function ListaMetas() {
         })
     : [];
 
+  const metaCompletada = (meta) => {
+    if (!meta.goalObjectives || meta.goalObjectives.length === 0) return false;
+    return meta.goalObjectives.every((obj) => obj.state === "completed");
+  };
+
   return (
     <div className="lista-metas">
       <div className="agenda-titulo">
@@ -167,6 +172,7 @@ function ListaMetas() {
                 className="meta-nombre clickable"
                 onClick={() => navigate(`/detalle-meta/${meta.id}`)}
               >
+                {metaCompletada(meta) && <span className="check-verde">✔</span>}{" "}
                 {meta.title}
               </span>
 
