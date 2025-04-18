@@ -1,0 +1,96 @@
+.detalle-meta {
+  width: 100%;
+  max-width: 750px;
+  margin: 100px auto 40px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  font-family: "Inter", sans-serif;
+}
+
+.volver-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 500;
+  margin-bottom: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.meta-info {
+  margin-bottom: 30px;
+}
+
+.meta-info h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
+  color: #1f2937;
+}
+
+.meta-info .descripcion {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.meta-info .fecha,
+.meta-info .estado {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.estado.completed {
+  color: green;
+}
+
+.estado.inprogress {
+  color: #eab308;
+}
+
+.titulo-objetivos {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1f2937;
+}
+
+.lista-objetivos {
+  list-style: none;
+  padding: 0;
+}
+
+.objetivo-detalle {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+  background: #f9fafb;
+  display: flex;
+  gap: 16px;
+}
+
+.orden {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2563eb;
+  min-width: 30px;
+}
+
+.objetivo-detalle h4 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: #1f2937;
+}
+
+.objetivo-detalle p {
+  margin: 2px 0;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.completado {
+  color: #10b981;
+}

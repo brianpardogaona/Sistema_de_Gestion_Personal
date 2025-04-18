@@ -85,17 +85,23 @@
 
 .meta-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  font-size: 17px;
-  font-weight: 600;
+  align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  color: #1f2937;
 }
 
 .meta-nombre {
-  flex-grow: 1;
+  display: inline-block;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.meta-derecha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
 }
 
 .meta-fecha {
@@ -224,4 +230,13 @@
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+.meta-nombre.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.meta-nombre.clickable:hover {
+  transform: scale(1.015);
 }

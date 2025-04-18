@@ -7,6 +7,7 @@ import Agenda from "./pages/Agenda";
 import Register from "./pages/Register";
 import CrearMeta from "./pages/CrearMeta";
 import EditarMeta from "./pages/EditarMeta";
+import DetalleMeta from "./pages/DetalleMeta";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/crear-meta" element={<CrearMeta />} />
       <Route path="/editar-meta/:id" element={<EditarMeta />} />
+      <Route path="/detalle-meta/:id" element={<DetalleMeta />} />
     </Routes>
   );
 }

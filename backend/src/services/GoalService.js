@@ -316,4 +316,50 @@ export class GoalService {
       return error;
     }
   }
+
+  async getGoalById(goalId, userId) {
+    const { Goal, Objective } = await getModels();
+
+    try {
+      const goal = await Goal.findOne({
+        where: {
+          id: goalId,
+          userId,
+        },
+        include: [
+          {
+            model: Objective,
+            as: "goalObjectives",
+            required: false,
+            attributes: [
+              "id",
+              "title",
+              "description",
+              "state",
+              "goalListOrder",
+              "createdAt",
+              "completedAt",
+            ],
+          },
+        ],
+      });
+
+      if (!goal) return null;
+
+      return {
+        id: goal.id,
+        title: goal.title,
+        description: goal.description,
+        state: goal.state,
+        createdAt: goal.createdAt,
+        completedAt: goal.completedAt,
+        goalObjectives: goal.goalObjectives.sort(
+          (a, b) => a.goalListOrder - b.goalListOrder
+        ),
+      };
+    } catch (error) {
+      console.error("Error obteniendo la meta por ID:", error);
+      throw new Error("No se pudo obtener la meta.");
+    }
+  }
 }

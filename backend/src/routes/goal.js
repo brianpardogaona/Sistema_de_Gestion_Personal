@@ -16,6 +16,23 @@ router.post("/create", authenticateToken, async (req, res) => {
   }
 });
 
+// Get goal by ID with all its objectives
+router.get("/:id", authenticateToken, async (req, res) => {
+  try {
+    const goalService = new GoalService();
+    const goal = await goalService.getGoalById(req.params.id, req.user.id);
+
+    if (!goal) {
+      return res.status(404).json({ error: "Meta no encontrada" });
+    }
+
+    res.status(200).json(goal);
+  } catch (error) {
+    console.error("Error al obtener la meta:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Delete goal
 router.delete("/:id", authenticateToken, async (req, res) => {
   const goalService = new GoalService({

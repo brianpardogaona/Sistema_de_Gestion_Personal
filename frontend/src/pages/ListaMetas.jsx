@@ -163,32 +163,37 @@ function ListaMetas() {
         metasFiltradas.map((meta) => (
           <div key={meta.id} className="meta">
             <div className="meta-header">
-              <span className="meta-nombre">{meta.title}</span>
-              <span className="meta-fecha">
-                {formatearFecha(meta.createdAt)}
-              </span>
-              {meta.state === "completed" && (
-                <span className="meta-completada">✔️</span>
-              )}
-              <button
-                className="edit-btn"
-                onClick={() => navigate(`/editar-meta/${meta.id}`)}
+              <span
+                className="meta-nombre clickable"
+                onClick={() => navigate(`/detalle-meta/${meta.id}`)}
               >
-                <Edit2 size={18} />
-              </button>
-              {meta.goalObjectives?.length > 0 && (
+                {meta.title}
+              </span>
+
+              <div className="meta-derecha">
+                <span className="meta-fecha">
+                  {formatearFecha(meta.createdAt)}
+                </span>
                 <button
-                  className="desplegar-btn"
-                  onClick={() =>
-                    setDesplegadas((prev) => ({
-                      ...prev,
-                      [meta.id]: !prev[meta.id],
-                    }))
-                  }
+                  className="edit-btn"
+                  onClick={() => navigate(`/editar-meta/${meta.id}`)}
                 >
-                  {desplegadas[meta.id] ? "▲" : "▼"}
+                  <Edit2 size={18} />
                 </button>
-              )}
+                {meta.goalObjectives?.length > 0 && (
+                  <button
+                    className="desplegar-btn"
+                    onClick={() =>
+                      setDesplegadas((prev) => ({
+                        ...prev,
+                        [meta.id]: !prev[meta.id],
+                      }))
+                    }
+                  >
+                    {desplegadas[meta.id] ? "▲" : "▼"}
+                  </button>
+                )}
+              </div>
             </div>
 
             {desplegadas[meta.id] && (
