@@ -58,7 +58,19 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Obtener perfil del usuario autenticado
+// Logout
+router.post("/logout", (req, res) => {
+  res.clearCookie("access-token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+
+  res.json({ message: "Sesión cerrada" });
+});
+
+// Get profile of authenticated user
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
     const userService = new UserService({ id: req.user.id });

@@ -6,6 +6,19 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:4000/api/user/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Error al cerrar sesión:", err);
+    }
+
+    navigate("/", { replace: true });
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-content">
@@ -31,7 +44,7 @@ export default function Navbar() {
             activePath={location.pathname}
             onClick={() => navigate("/mis-metas")}
           />
-          
+
           <NavItem
             icon={<User size={18} />}
             text="Mi Cuenta"
@@ -41,7 +54,7 @@ export default function Navbar() {
           />
         </div>
 
-        <button className="logout-button" onClick={() => navigate("/")}>
+        <button className="logout-button" onClick={handleLogout}>
           <LogOut size={18} className="icon" />
           Salir
         </button>
