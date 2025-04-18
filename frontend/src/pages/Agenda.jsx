@@ -110,7 +110,7 @@ function Agenda() {
         <div className="lista-metas">
           <div className="agenda-titulo">
             <List size={24} />
-            <h2>Agenda</h2>
+            <h2>Agenda de Objetivos En Progreso</h2>
           </div>
 
           <DragDropContext onDragEnd={handleDragEnd}>
@@ -133,17 +133,12 @@ function Agenda() {
                           >
                             <div className="meta-header">
                               <span className="meta-nombre">{obj.title}</span>
-                              <span className="meta-fecha">
-                                {formatearFecha(obj.createdAt)}
-                              </span>
-                              <button
-                                className="info-btn"
-                                onClick={() =>
-                                  navigate(`/info-meta/${obj.metaId}`)
-                                }
-                              >
-                                ℹ️
-                              </button>
+
+                              <div className="meta-fecha-wrapper">
+                                <span className="meta-fecha">
+                                  {formatearFecha(obj.createdAt)}
+                                </span>
+                              </div>
                             </div>
                             <div className="meta-asociada">
                               <span className="meta-titulo">

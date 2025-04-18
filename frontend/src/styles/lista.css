@@ -110,6 +110,10 @@
   font-weight: 400;
 }
 
+.meta-fecha-wrapper {
+  margin-left: auto;
+}
+
 .meta-completada {
   font-size: 18px;
   color: green;
