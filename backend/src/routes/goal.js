@@ -174,4 +174,19 @@ router.patch("/:id/update", authenticateToken, async (req, res) => {
   }
 });
 
+// Delete goal with all its objectives
+router.delete("/:id/delete", authenticateToken, async (req, res) => {
+  const goalService = new GoalService();
+  const result = await goalService.deleteGoalWithObjectives(
+    req.user.id,
+    req.params.id
+  );
+
+  if (!(result instanceof Error)) {
+    res.json({ message: result });
+  } else {
+    res.status(400).json({ error: result.message });
+  }
+});
+
 export default router;

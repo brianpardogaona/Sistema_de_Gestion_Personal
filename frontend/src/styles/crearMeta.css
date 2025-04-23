@@ -94,7 +94,7 @@
 }
 
 .cancel-btn {
-  background: #dc3545;
+  background: #6c757d; /* gris oscuro elegante */
   color: white;
   margin-right: 10px;
 }
@@ -158,4 +158,19 @@
 
 .objetivo-item:hover {
   background: #f1f1f1;
+}
+
+.delete-meta-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  justify-content: center;
+}
+
+.delete-meta-btn:hover {
+  background-color: #c0392b;
 }

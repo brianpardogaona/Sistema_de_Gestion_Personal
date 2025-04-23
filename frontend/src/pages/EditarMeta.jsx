@@ -207,9 +207,32 @@ function EditarMeta() {
     navigate("/mis-metas");
   };
 
+  const handleEliminarMeta = async () => {
+    const confirmacion = window.confirm(
+      "¿Estás seguro de que quieres eliminar esta meta? Se eliminarán también todos sus objetivos."
+    );
+
+    if (!confirmacion) return;
+
+    try {
+      const response = await fetch(`${API_URL}goal/${id}/delete`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("Error al eliminar la meta");
+
+      navigate("/mis-metas");
+    } catch (error) {
+      console.error("Error al eliminar la meta:", error);
+    }
+  };
+
   return (
     <div className="crear-meta-container">
-      <h2>Editar Meta</h2>
+      <button className="delete-meta-btn" onClick={handleEliminarMeta}>
+        Eliminar meta
+      </button>
       <label>Título</label>
       <input type="text" value={titulo} onChange={handleTituloChange} />
 

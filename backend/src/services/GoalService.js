@@ -362,4 +362,24 @@ export class GoalService {
       throw new Error("No se pudo obtener la meta.");
     }
   }
+
+  async deleteGoalWithObjectives(userId, goalId) {
+    const { Goal, Objective } = await getModels();
+
+    try {
+      const goal = await Goal.findOne({ where: { id: goalId, userId } });
+
+      if (!goal) {
+        return new Error("Meta no encontrada o no pertenece al usuario.");
+      }
+
+      await Objective.destroy({ where: { goalId } });
+      await Goal.destroy({ where: { id: goalId } });
+
+      return "Meta y objetivos eliminados correctamente.";
+    } catch (error) {
+      console.error("Error al eliminar la meta:", error);
+      return error;
+    }
+  }
 }
