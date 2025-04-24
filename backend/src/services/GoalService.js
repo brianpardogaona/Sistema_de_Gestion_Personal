@@ -296,8 +296,7 @@ export class GoalService {
               description,
               goalListOrder: i + 1,
             });
-
-            console.log("llego");
+            console.log("Objetivo actualizado");
           } else {
             await Objective.create({
               userId,
@@ -306,7 +305,17 @@ export class GoalService {
               description,
               goalListOrder: i + 1,
             });
+            console.log("Objetivo creado (por fallback)");
           }
+        } else {
+          await Objective.create({
+            userId,
+            goalId: Number(goalId),
+            title,
+            description,
+            goalListOrder: i + 1,
+          });
+          console.log("Objetivo nuevo creado");
         }
       }
 
