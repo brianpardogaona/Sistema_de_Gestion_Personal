@@ -4,15 +4,6 @@ export class GoalService {
   constructor(body = {}) {
     this.body = body;
   }
-  async createGoal() {
-    const { Goal } = await getModels();
-    try {
-      const newGoal = await Goal.create(this.body);
-      return newGoal;
-    } catch (error) {
-      return error;
-    }
-  }
 
   async deleteGoal() {
     const { id } = this.body;
