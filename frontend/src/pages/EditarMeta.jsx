@@ -230,7 +230,7 @@ function EditarMeta() {
 
   return (
     <div className="crear-meta-container">
-      <button className="delete-meta-btn" onClick={handleEliminarMeta}>
+      <button className="delete-meta-btn-abs" onClick={handleEliminarMeta}>
         Eliminar meta
       </button>
       <label>Título</label>
