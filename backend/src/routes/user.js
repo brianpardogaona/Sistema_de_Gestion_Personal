@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 
 // Modify user
 router.patch("/", authenticateToken, async (req, res) => {
-  const id = req.user.id; // ← importante
+  const id = req.user.id; 
   const userService = new UserService({ id, ...req.body });
 
   try {
@@ -159,7 +159,7 @@ router.delete("/", authenticateToken, async (req, res) => {
   }
 });
 
-
+// Validate token
 router.get("/validate-token", (req, res) => {
   const token = req.cookies["access-token"];
 

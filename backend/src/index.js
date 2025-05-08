@@ -28,7 +28,7 @@ startServer();
 
 export function getModels() {
   if (!models) {
-    throw new Error("❌ Models are not initialized yet. Wait for startServer()");
+    throw new Error(" Models are not initialized yet. Wait for startServer()");
   }
   return models;
 }

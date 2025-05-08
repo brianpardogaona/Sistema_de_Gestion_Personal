@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import "../styles/login.css";
 import "../styles/styles.css";
 
-// Functions
+
 import login from "@/pagesFunctions/login";
 import { useNavigate } from "react-router-dom";
 

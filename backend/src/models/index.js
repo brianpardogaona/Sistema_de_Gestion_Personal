@@ -23,10 +23,10 @@ export default async function createTables(sequelize) {
 
     if (process.env.SYNC_DB === "force") {
       await sequelize.sync({ force: true });
-      console.log("✅ DB Restarted");
+      console.log(" DB Restarted");
     } else if (process.env.SYNC_DB === "alter") {
       await sequelize.sync({ alter: true });
-      console.log("✅ All tables were successfully synchronized.");
+      console.log(" All tables were successfully synchronized.");
     }
 
     if (process.env.INIT_USERS === "true") await initUsers(User);
@@ -36,7 +36,7 @@ export default async function createTables(sequelize) {
 
     return { User, Goal, Objective };
   } catch (error) {
-    console.error("❌ Error synchronizing the database:", error);
+    console.error(" Error synchronizing the database:", error);
     throw error;
   }
 }
@@ -44,7 +44,7 @@ export default async function createTables(sequelize) {
 async function initUsers(User) {
   await User.create({
     id: uuidv4(),
-    username: "brian",
+    username: "root",
     password: await bcrypt.hash(
       "12345678",
       Number(process.env.SALTS_ROUNDS) || 10
@@ -57,10 +57,10 @@ async function initUsers(User) {
 
 async function initGoalsAndObjetives(User, Goal, Objective) {
   const [rootUser] = await User.findOrCreate({
-    where: { username: "brian" },
+    where: { username: "root" },
     defaults: {
       id: uuidv4(),
-      username: "brian",
+      username: "root",
       password: await bcrypt.hash(
         "12345678",
         Number(process.env.SALTS_ROUNDS) || 10
@@ -108,7 +108,7 @@ async function initGoalsAndObjetives(User, Goal, Objective) {
     },
   ]);
 
-  console.log("✅ 7 goals inserted.");
+  console.log(" 7 goals inserted.");
 
   // Insert objectives
   await Objective.bulkCreate([
@@ -158,5 +158,5 @@ async function initGoalsAndObjetives(User, Goal, Objective) {
     },
   ]);
 
-  console.log("✅ Objectives inserted.");
+  console.log("Objectives inserted.");
 }
